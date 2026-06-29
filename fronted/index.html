@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Code Generator</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css">
+
+</head>
+<body>
+
+<!-- ===================== APP ===================== -->
+
+<div class="app">
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <i class="fa-solid fa-code"></i>
+
+            <h2>AI Code</h2>
+
+        </div>
+
+        <button class="new-chat">
+
+            <i class="fa-solid fa-plus"></i>
+
+            New Chat
+
+        </button>
+
+        <div class="history-title">
+
+            Recent Chats
+
+        </div>
+
+        <div class="history">
+
+            <div class="history-item">
+
+                <i class="fa-regular fa-message"></i>
+
+                Python Calculator
+
+            </div>
+
+            <div class="history-item">
+
+                <i class="fa-regular fa-message"></i>
+
+                Pandas CSV
+
+            </div>
+
+            <div class="history-item">
+
+                <i class="fa-regular fa-message"></i>
+
+                Java Project
+
+            </div>
+
+            <div class="history-item">
+
+                <i class="fa-regular fa-message"></i>
+
+                NumPy Example
+
+            </div>
+
+            <div class="history-item">
+
+                <i class="fa-regular fa-message"></i>
+
+                Matplotlib Graph
+
+            </div>
+
+        </div>
+
+        <div class="sidebar-bottom">
+
+            <div class="menu-item">
+
+                <i class="fa-solid fa-clock-rotate-left"></i>
+
+                History
+
+            </div>
+
+            <div class="menu-item">
+
+                <i class="fa-solid fa-book"></i>
+
+                Templates
+
+            </div>
+
+            <div class="menu-item">
+
+                <i class="fa-solid fa-gear"></i>
+
+                Settings
+
+            </div>
+
+            <div class="menu-item">
+
+                <i class="fa-solid fa-user"></i>
+
+                Profile
+
+            </div>
+
+        </div>
+
+    </aside>
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+        <!-- ============== TOP BAR ============== -->
+
+        <header class="topbar">
+
+            <div class="title">
+
+                AI Code Generator
+
+            </div>
+
+            <button class="login-btn">
+
+                Login
+
+            </button>
+
+        </header>
+
+        <!-- ============== CHAT ============== -->
+
+        <section class="chat-area">
+
+            <!-- Welcome -->
+
+            <div class="welcome">
+
+                <h1>
+
+                    What would you like to code today?
+
+                </h1>
+
+                <p>
+
+                    Generate code, explain programs, debug errors,
+                    optimize projects, convert languages and work
+                    with libraries like Pandas, NumPy,
+                    Matplotlib, OpenCV and Scikit-learn.
+
+                </p>
+
+            </div>
+
+            <!-- AI MESSAGE -->
+
+            <div class="message ai-message">
+
+                <div class="message-header">
+
+                    <div class="avatar">
+
+                        <i class="fa-solid fa-robot"></i>
+
+                    </div>
+
+                    <h3>
+
+                        AI Code Generator
+
+                    </h3>
+
+                </div>
+
+                <div class="message-content">
+
+                    <p>
+
+                        👋 Welcome!
+
+                    </p>
+
+                    <p>
+
+                        Ask me anything related to programming.
+
+                    </p>
+
+                    <p>
+
+                        Examples:
+
+                    </p>
+
+                    <ul>
+
+                        <li>Create a Python Calculator.</li>
+
+                        <li>Explain this Java code.</li>
+
+                        <li>Debug my C++ program.</li>
+
+                        <li>Create charts using Matplotlib.</li>
+
+                        <li>Analyze CSV using Pandas.</li>
+
+                        <li>Optimize NumPy code.</li>
+
+                        <li>Convert Java to Python.</li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <!-- Response Container -->
+
+            <div id="responseContainer">
+
+                <!-- AI Response will appear here -->
+
+            </div>
+
+                        <!-- ================= USER MESSAGE ================= -->
+
+            <div id="chatContainer">
+
+                <!-- User and AI chats will appear here dynamically -->
+
+            </div>
+
+        </section>
+
+        <!-- ================= PROMPT ================= -->
+
+        <div class="prompt-wrapper">
+
+            <div class="prompt-box">
+
+                <textarea
+                    id="prompt"
+                    placeholder="Ask anything...
+
+Examples:
+• Create a Python Calculator.
+• Read CSV using Pandas.
+• Plot graph using Matplotlib.
+• Explain this Java code.
+• Convert Java to Python.
+• Optimize NumPy program."
+                ></textarea>
+
+                <div class="prompt-actions">
+
+                    <!-- Left Side -->
+
+                    <div class="left-actions">
+
+                        <button id="attachBtn">
+
+                            <i class="fa-solid fa-paperclip"></i>
+
+                        </button>
+
+                    </div>
+
+                    <!-- Right Side -->
+
+                    <div class="right-actions">
+
+                        <button id="generateBtn">
+
+                            <i class="fa-solid fa-arrow-up"></i>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    <p>
+
+        AI Code Generator • FastAPI • HTML • CSS • JavaScript
+
+    </p>
+
+</footer>
+
+<script src="js/app.js"></script>
+
+</body>
+</html>
+        </section>
