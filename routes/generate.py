@@ -1,17 +1,15 @@
-from fastapi import APIRouter, HTTPException
-
+from fastapi import APIRouter
 from schemas.prompt import Prompt
-from services.ai_service import AIConfigurationError, AIServiceError, generate_code
+from services.ai_service import generate_code
 
 router = APIRouter()
 
+
 @router.post("/generate")
 async def generate(data: Prompt):
-    try:
-        response = await generate_code(data.prompt)
-    except AIConfigurationError as error:
-        raise HTTPException(status_code=503, detail=str(error)) from error
-    except AIServiceError as error:
-        raise HTTPException(status_code=502, detail=str(error)) from error
 
-    return {"response": response}
+    result = await generate_code(data.prompt)
+
+    return {
+        "response": result
+    }
