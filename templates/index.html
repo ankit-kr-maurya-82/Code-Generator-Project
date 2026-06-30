@@ -11,58 +11,45 @@
 </head>
 <body>
     <main class="app-shell">
-        <section class="hero" aria-labelledby="page-title">
-            <div>
-                <p class="eyebrow">AI Code Generator</p>
-                <h1 id="page-title">Build cleaner code from a sharper prompt.</h1>
-                <p class="hero-copy">Describe a feature, bug fix, component, script, or architecture idea and get a structured code answer ready to review.</p>
+        <header class="topbar">
+            <div class="brand">
+                <span class="brand-mark">AI</span>
+                <span>Code Generator</span>
             </div>
-            <div class="status-card" aria-label="Generator status">
-                <span class="status-dot"></span>
-                <div>
-                    <strong>Gemini ready</strong>
-                    <span>Fast code drafts, explanations, libraries, and improvements.</span>
-                </div>
-            </div>
+            <span class="provider-pill">Groq</span>
+        </header>
+
+        <section class="welcome" aria-labelledby="page-title">
+            <p class="eyebrow">Code assistant</p>
+            <h1 id="page-title"><span>Hello, developer.</span> What should we build?</h1>
         </section>
 
-        <section class="workspace" aria-label="Code generator workspace">
-            <form class="composer" id="promptForm">
-                <div class="panel-header">
-                    <div>
-                        <span class="section-label">Prompt</span>
-                        <h2>What should we create?</h2>
-                    </div>
-                    <span class="count" id="charCount">0 chars</span>
-                </div>
+        <section class="suggestions" aria-label="Example prompts">
+            <button type="button" class="chip" data-prompt="Create a responsive React pricing card with monthly and annual billing states.">Create a React pricing card</button>
+            <button type="button" class="chip" data-prompt="Write a Python script that reads a CSV, cleans missing values, and exports a summary report.">Write a CSV cleanup script</button>
+            <button type="button" class="chip" data-prompt="Design a REST API schema for a task manager with auth, projects, labels, and comments.">Design a task manager API</button>
+            <button type="button" class="chip" data-prompt="Explain this error in simple words and show the fix.">Explain and fix an error</button>
+        </section>
 
-                <label class="sr-only" for="prompt">Prompt</label>
-                <textarea id="prompt" placeholder="Example: Create a FastAPI route that accepts an image upload, validates the file type, stores it locally, and returns the public URL."></textarea>
+        <form class="composer" id="promptForm">
+            <label class="sr-only" for="prompt">Prompt</label>
+            <textarea id="prompt" placeholder="Ask Code Generator to write, explain, debug, or improve code"></textarea>
 
-                <div class="prompt-actions">
-                    <div class="suggestions" aria-label="Example prompts">
-                        <button type="button" class="chip" data-prompt="2+2">2+2</button>
-                        <button type="button" class="chip" data-prompt="Create a responsive React pricing card with monthly and annual billing states.">React UI</button>
-                        <button type="button" class="chip" data-prompt="Write a Python script that reads a CSV, cleans missing values, and exports a summary report.">Python script</button>
-                        <button type="button" class="chip" data-prompt="Design a REST API schema for a task manager with auth, projects, labels, and comments.">API design</button>
-                    </div>
-                    <button id="generateBtn" class="primary-button" type="submit">
-                        <span class="button-icon">+</span>
-                        <span>Generate</span>
-                    </button>
-                </div>
-            </form>
+            <div class="composer-footer">
+                <span class="count" id="charCount">0 chars</span>
+                <button id="generateBtn" class="primary-button" type="submit" aria-label="Generate">
+                    <span>Generate</span>
+                    <span class="button-icon">+</span>
+                </button>
+            </div>
+        </form>
 
-            <section class="output-panel" aria-live="polite">
-                <div class="panel-header">
-                    <div>
-                        <span class="section-label">Output</span>
-                        <h2>Generated result</h2>
-                    </div>
-                    <button id="copyBtn" class="ghost-button" type="button" disabled>Copy</button>
-                </div>
-                <pre id="result">Output will appear here...</pre>
-            </section>
+        <section class="output-panel" aria-live="polite">
+            <div class="output-header">
+                <h2>Response</h2>
+                <button id="copyBtn" class="ghost-button" type="button" disabled>Copy</button>
+            </div>
+            <pre id="result">Output will appear here...</pre>
         </section>
     </main>
 
