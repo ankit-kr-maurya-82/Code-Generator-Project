@@ -1,41 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>AI Code Generator</title>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
-
 </head>
-
 <body>
+    <main class="app-shell">
+        <section class="hero" aria-labelledby="page-title">
+            <div>
+                <p class="eyebrow">AI Code Generator</p>
+                <h1 id="page-title">Build cleaner code from a sharper prompt.</h1>
+                <p class="hero-copy">Describe a feature, bug fix, component, script, or architecture idea and get a structured code answer ready to review.</p>
+            </div>
+            <div class="status-card" aria-label="Generator status">
+                <span class="status-dot"></span>
+                <div>
+                    <strong>Gemini ready</strong>
+                    <span>Fast code drafts, explanations, libraries, and improvements.</span>
+                </div>
+            </div>
+        </section>
 
-<h1>AI Code Generator</h1>
+        <section class="workspace" aria-label="Code generator workspace">
+            <form class="composer" id="promptForm">
+                <div class="panel-header">
+                    <div>
+                        <span class="section-label">Prompt</span>
+                        <h2>What should we create?</h2>
+                    </div>
+                    <span class="count" id="charCount">0 chars</span>
+                </div>
 
-<textarea
-id="prompt"
-placeholder="Ask anything..."
-></textarea>
+                <label class="sr-only" for="prompt">Prompt</label>
+                <textarea id="prompt" placeholder="Example: Create a FastAPI route that accepts an image upload, validates the file type, stores it locally, and returns the public URL."></textarea>
 
-<br><br>
+                <div class="prompt-actions">
+                    <div class="suggestions" aria-label="Example prompts">
+                        <button type="button" class="chip" data-prompt="2+2">2+2</button>
+                        <button type="button" class="chip" data-prompt="Create a responsive React pricing card with monthly and annual billing states.">React UI</button>
+                        <button type="button" class="chip" data-prompt="Write a Python script that reads a CSV, cleans missing values, and exports a summary report.">Python script</button>
+                        <button type="button" class="chip" data-prompt="Design a REST API schema for a task manager with auth, projects, labels, and comments.">API design</button>
+                    </div>
+                    <button id="generateBtn" class="primary-button" type="submit">
+                        <span class="button-icon">+</span>
+                        <span>Generate</span>
+                    </button>
+                </div>
+            </form>
 
-<button id="generateBtn">
+            <section class="output-panel" aria-live="polite">
+                <div class="panel-header">
+                    <div>
+                        <span class="section-label">Output</span>
+                        <h2>Generated result</h2>
+                    </div>
+                    <button id="copyBtn" class="ghost-button" type="button" disabled>Copy</button>
+                </div>
+                <pre id="result">Output will appear here...</pre>
+            </section>
+        </section>
+    </main>
 
-Generate
-
-</button>
-
-<pre id="result">
-
-Output will appear here...
-
-</pre>
-
-<script src="/static/js/app.js"></script>
-
+    <script src="/static/js/app.js"></script>
 </body>
 </html>

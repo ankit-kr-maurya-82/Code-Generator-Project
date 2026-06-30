@@ -1,6 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from schemas.prompt import Prompt
-from services.ai_service import generate_code
+from services.ai_service import AIServiceError, generate_code
 
 router = APIRouter()
 
@@ -8,7 +8,10 @@ router = APIRouter()
 @router.post("/generate")
 async def generate(data: Prompt):
 
-    result = await generate_code(data.prompt)
+    try:
+        result = await generate_code(data.prompt)
+    except AIServiceError as error:
+        raise HTTPException(status_code=400, detail=str(error))
 
     return {
         "response": result
