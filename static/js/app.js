@@ -1,5 +1,5 @@
 const form = document.getElementById("promptForm");
-const button = document.getElementById("generateBtn");
+const generateButton = document.getElementById("generateBtn");
 const promptInput = document.getElementById("prompt");
 const chatThread = document.getElementById("chatThread");
 const emptyState = document.getElementById("emptyState");
@@ -313,59 +313,80 @@ const updateCount = () => {
     charCount.textContent = `${count.toLocaleString()} ${count === 1 ? "char" : "chars"}`;
 };
 
-promptInput.addEventListener("input", updateCount);
+const requiredElements = {
+    form,
+    promptInput,
+    chatThread,
+    emptyState,
+    charCount
+};
 
-chips.forEach((chip) => {
-    chip.addEventListener("click", () => {
-        promptInput.value = chip.dataset.prompt;
-        promptInput.focus();
-        updateCount();
-    });
-});
+const missingElements = Object.entries(requiredElements)
+    .filter(([, element]) => !element)
+    .map(([name]) => name);
 
-form.addEventListener("submit", async (event) => {
-    event.preventDefault();
+if (missingElements.length) {
+    console.warn(`Code Generator UI is missing required element(s): ${missingElements.join(", ")}`);
+} else {
+    promptInput.addEventListener("input", updateCount);
 
-    const prompt = promptInput.value.trim();
-
-    emptyState.hidden = true;
-
-    if (!prompt) {
-        const assistantMessage = createAssistantMessage();
-        setAssistantResult("Please enter a prompt first.", assistantMessage, true);
-        promptInput.focus();
-        return;
-    }
-
-    createUserMessage(prompt);
-    const assistantMessage = createAssistantMessage();
-    button.disabled = true;
-    setAssistantResult("Generating a clean answer...", assistantMessage, false, false);
-
-    try {
-        const response = await fetch("/generate", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ prompt })
+    chips.forEach((chip) => {
+        chip.addEventListener("click", () => {
+            promptInput.value = chip.dataset.prompt;
+            promptInput.focus();
+            updateCount();
         });
+    });
 
-        const data = await response.json();
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
 
-        if (!response.ok) {
-            setAssistantResult(data.detail || "Something went wrong.", assistantMessage, true);
+        const submitButton = form.querySelector('button[type="submit"]') || generateButton;
+        const prompt = promptInput.value.trim();
+
+        emptyState.hidden = true;
+
+        if (!prompt) {
+            const assistantMessage = createAssistantMessage();
+            setAssistantResult("Please enter a prompt first.", assistantMessage, true);
+            promptInput.focus();
             return;
         }
 
-        setAssistantResult(data.response || "No output was returned.", assistantMessage);
-        promptInput.value = "";
-        updateCount();
-    } catch (error) {
-        setAssistantResult("Could not reach the server. Please try again.", assistantMessage, true);
-    } finally {
-        button.disabled = false;
-    }
-});
+        createUserMessage(prompt);
+        const assistantMessage = createAssistantMessage();
+        if (submitButton) {
+            submitButton.disabled = true;
+        }
+        setAssistantResult("Generating a clean answer...", assistantMessage, false, false);
 
-updateCount();
+        try {
+            const response = await fetch("/generate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ prompt })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                setAssistantResult(data.detail || "Something went wrong.", assistantMessage, true);
+                return;
+            }
+
+            setAssistantResult(data.response || "No output was returned.", assistantMessage);
+            promptInput.value = "";
+            updateCount();
+        } catch (error) {
+            setAssistantResult("Could not reach the server. Please try again.", assistantMessage, true);
+        } finally {
+            if (submitButton) {
+                submitButton.disabled = false;
+            }
+        }
+    });
+
+    updateCount();
+}
