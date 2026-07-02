@@ -16,8 +16,20 @@
                 <span class="brand-mark">AI</span>
                 <span>Code Generator</span>
             </div>
-            <span class="provider-pill">CodeGen</span>
+            <div class="topbar-actions">
+                <button id="historyToggle" class="topbar-button" type="button" aria-expanded="false" aria-controls="historyPanel">History</button>
+                <span class="provider-pill">CodeGen</span>
+            </div>
         </header>
+
+        <aside class="history-panel" id="historyPanel" aria-label="Generation history" hidden>
+            <div class="history-header">
+                <h2>History</h2>
+                <button id="clearHistoryBtn" class="ghost-button" type="button">Clear</button>
+            </div>
+            <div class="history-empty" id="historyEmpty">No saved generations yet.</div>
+            <div class="history-list" id="historyList"></div>
+        </aside>
 
         <section class="chat-thread" id="chatThread" aria-live="polite">
             <div class="empty-state" id="emptyState">
@@ -48,6 +60,6 @@
         </form>
     </main>
 
-    <script src="/static/js/app.js?v=20260702-1"></script>
+    <script src="/static/js/app.js?v=20260702-2"></script>
 </body>
 </html>

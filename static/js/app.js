@@ -4,7 +4,14 @@ const promptInput = document.getElementById("prompt");
 const chatThread = document.getElementById("chatThread");
 const emptyState = document.getElementById("emptyState");
 const charCount = document.getElementById("charCount");
+const historyToggle = document.getElementById("historyToggle");
+const historyPanel = document.getElementById("historyPanel");
+const historyList = document.getElementById("historyList");
+const historyEmpty = document.getElementById("historyEmpty");
+const clearHistoryButton = document.getElementById("clearHistoryBtn");
 const chips = document.querySelectorAll(".chip");
+const historyStorageKey = "codeGeneratorHistory";
+const maxHistoryItems = 20;
 
 const copyText = async (text) => {
     if (!text.trim() || !navigator.clipboard) {
@@ -211,6 +218,10 @@ const createUserMessage = (message) => {
     scrollToBottom();
 };
 
+const clearChatMessages = () => {
+    chatThread.querySelectorAll(".message-row").forEach((row) => row.remove());
+};
+
 const createAssistantMessage = () => {
     const row = document.createElement("article");
     row.className = "message-row message-row-assistant";
@@ -313,12 +324,99 @@ const updateCount = () => {
     charCount.textContent = `${count.toLocaleString()} ${count === 1 ? "char" : "chars"}`;
 };
 
+const readHistory = () => {
+    try {
+        const saved = JSON.parse(localStorage.getItem(historyStorageKey) || "[]");
+        return Array.isArray(saved) ? saved : [];
+    } catch (error) {
+        return [];
+    }
+};
+
+const writeHistory = (items) => {
+    localStorage.setItem(historyStorageKey, JSON.stringify(items.slice(0, maxHistoryItems)));
+};
+
+const formatHistoryTime = (timestamp) => {
+    return new Intl.DateTimeFormat(undefined, {
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+    }).format(new Date(timestamp));
+};
+
+const closeHistory = () => {
+    if (!historyPanel || !historyToggle) {
+        return;
+    }
+
+    historyPanel.hidden = true;
+    historyToggle.setAttribute("aria-expanded", "false");
+};
+
+const restoreHistoryItem = (item) => {
+    clearChatMessages();
+    emptyState.hidden = true;
+    createUserMessage(item.prompt);
+
+    const assistantMessage = createAssistantMessage();
+    setAssistantResult(item.response, assistantMessage);
+    closeHistory();
+};
+
+const renderHistory = () => {
+    if (!historyList || !historyEmpty) {
+        return;
+    }
+
+    const items = readHistory();
+    historyList.innerHTML = "";
+    historyEmpty.hidden = items.length > 0;
+
+    items.forEach((item) => {
+        const button = document.createElement("button");
+        button.className = "history-item";
+        button.type = "button";
+
+        const title = document.createElement("span");
+        title.className = "history-title";
+        title.textContent = item.prompt;
+
+        const time = document.createElement("span");
+        time.className = "history-time";
+        time.textContent = formatHistoryTime(item.createdAt);
+
+        button.append(title, time);
+        button.addEventListener("click", () => restoreHistoryItem(item));
+        historyList.appendChild(button);
+    });
+};
+
+const saveHistoryItem = (prompt, response) => {
+    const items = readHistory();
+    const nextItem = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        prompt,
+        response,
+        createdAt: Date.now()
+    };
+
+    writeHistory([nextItem, ...items]);
+    renderHistory();
+};
+
 const requiredElements = {
     form,
     promptInput,
     chatThread,
     emptyState,
-    charCount
+    charCount,
+    historyToggle,
+    historyPanel,
+    historyList,
+    historyEmpty,
+    clearHistoryButton
 };
 
 const missingElements = Object.entries(requiredElements)
@@ -328,7 +426,19 @@ const missingElements = Object.entries(requiredElements)
 if (missingElements.length) {
     console.warn(`Code Generator UI is missing required element(s): ${missingElements.join(", ")}`);
 } else {
+    renderHistory();
     promptInput.addEventListener("input", updateCount);
+
+    historyToggle.addEventListener("click", () => {
+        const isOpening = historyPanel.hidden;
+        historyPanel.hidden = !isOpening;
+        historyToggle.setAttribute("aria-expanded", String(isOpening));
+    });
+
+    clearHistoryButton.addEventListener("click", () => {
+        writeHistory([]);
+        renderHistory();
+    });
 
     chips.forEach((chip) => {
         chip.addEventListener("click", () => {
@@ -376,7 +486,9 @@ if (missingElements.length) {
                 return;
             }
 
-            setAssistantResult(data.response || "No output was returned.", assistantMessage);
+            const responseText = data.response || "No output was returned.";
+            setAssistantResult(responseText, assistantMessage);
+            saveHistoryItem(prompt, responseText);
             promptInput.value = "";
             updateCount();
         } catch (error) {
