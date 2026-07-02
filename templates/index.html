@@ -19,38 +19,33 @@
             <span class="provider-pill">CodeGen</span>
         </header>
 
-        <section class="welcome" aria-labelledby="page-title">
-            <h1 id="page-title"><span>Hello, developer.</span> What should we build?</h1>
-        </section>
+        <section class="chat-thread" id="chatThread" aria-live="polite">
+            <div class="empty-state" id="emptyState">
+                <section class="welcome" aria-labelledby="page-title">
+                    <h1 id="page-title"><span>Hello, developer.</span> What should we build?</h1>
+                </section>
 
-        <section class="suggestions" aria-label="Example prompts">
-            <button type="button" class="chip" data-prompt="Create a responsive React pricing card with monthly and annual billing states.">Create a React pricing card</button>
-            <button type="button" class="chip" data-prompt="Write a Python script that reads a CSV, cleans missing values, and exports a summary report.">Write a CSV cleanup script</button>
-            <button type="button" class="chip" data-prompt="Design a REST API schema for a task manager with auth, projects, labels, and comments.">Design a task manager API</button>
-            <button type="button" class="chip" data-prompt="Explain this error in simple words and show the fix.">Explain and fix an error</button>
+                <section class="suggestions" aria-label="Example prompts">
+                    <button type="button" class="chip" data-prompt="Create a responsive React pricing card with monthly and annual billing states.">Create a React pricing card</button>
+                    <button type="button" class="chip" data-prompt="Write a Python script that reads a CSV, cleans missing values, and exports a summary report.">Write a CSV cleanup script</button>
+                    <button type="button" class="chip" data-prompt="Design a REST API schema for a task manager with auth, projects, labels, and comments.">Design a task manager API</button>
+                    <button type="button" class="chip" data-prompt="Explain this error in simple words and show the fix.">Explain and fix an error</button>
+                </section>
+            </div>
         </section>
 
         <form class="composer" id="promptForm">
             <label class="sr-only" for="prompt">Prompt</label>
-            <textarea id="prompt" placeholder="Ask Code Generator to write, explain, debug, or improve code"></textarea>
-            
+            <textarea id="prompt" placeholder="Message Code Generator"></textarea>
 
             <div class="composer-footer">
                 <span class="count" id="charCount">0 chars</span>
-                <button id="generateBtn" class="primary-button" type="submit" aria-label="Generate">
-                    <span>Generate</span>
+                <button id="generateBtn" class="primary-button" type="submit" aria-label="Send">
+                    <span>Send</span>
                     <span class="button-icon">+</span>
                 </button>
             </div>
         </form>
-
-        <section class="output-panel" aria-live="polite">
-            <div class="output-header">
-                <h2>Response</h2>
-                <button id="copyBtn" class="ghost-button" type="button" disabled>Copy</button>
-            </div>
-            <pre id="result">Output will appear here...</pre>
-        </section>
     </main>
 
     <script src="/static/js/app.js"></script>
