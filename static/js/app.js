@@ -52,6 +52,8 @@ const supportedFileExtensions = new Set([
 
 let attachedFiles = [];
 let isFileReaderOpen = false;
+let autoSubmitTimer = null;
+let isSubmitting = false;
 
 const copyText = async (text) => {
     if (!text.trim() || !navigator.clipboard) {
@@ -411,6 +413,28 @@ const updateFileReaderPanel = () => {
     removeFileButton.hidden = false;
 };
 
+const clearAutoSubmitTimer = () => {
+    if (autoSubmitTimer) {
+        window.clearTimeout(autoSubmitTimer);
+        autoSubmitTimer = null;
+    }
+};
+
+const scheduleAutoSubmit = () => {
+    clearAutoSubmitTimer();
+
+    const hasContent = promptInput.value.trim().length > 0 || attachedFiles.length > 0;
+
+    if (!hasContent || isSubmitting) {
+        return;
+    }
+
+    autoSubmitTimer = window.setTimeout(() => {
+        autoSubmitTimer = null;
+        form.requestSubmit();
+    }, 900);
+};
+
 const clearAttachedFile = () => {
     attachedFiles = [];
     isFileReaderOpen = false;
@@ -418,6 +442,7 @@ const clearAttachedFile = () => {
     fileStatus.hidden = true;
     fileStatus.textContent = "";
     removeFileButton.hidden = true;
+    clearAutoSubmitTimer();
     updateFileReaderPanel();
 };
 
@@ -433,6 +458,7 @@ const setAttachedFile = (file, content) => {
 
     isFileReaderOpen = true;
     updateFileReaderPanel();
+    scheduleAutoSubmit();
 };
 
 const readAttachedFile = (file) => new Promise((resolve, reject) => {
@@ -575,7 +601,10 @@ if (missingElements.length) {
     console.warn(`Code Generator UI is missing required element(s): ${missingElements.join(", ")}`);
 } else {
     renderHistory();
-    promptInput.addEventListener("input", updateCount);
+    promptInput.addEventListener("input", () => {
+        updateCount();
+        scheduleAutoSubmit();
+    });
 
     attachFileButton.addEventListener("click", () => {
         fileInput.click();
@@ -655,6 +684,12 @@ if (missingElements.length) {
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
+        if (isSubmitting) {
+            return;
+        }
+
+        clearAutoSubmitTimer();
+
         const submitButton = form.querySelector('button[type="submit"]') || generateButton;
         const prompt = promptInput.value.trim();
         const requestPayload = buildRequestPayload(prompt);
@@ -668,6 +703,8 @@ if (missingElements.length) {
             promptInput.focus();
             return;
         }
+
+        isSubmitting = true;
 
         createUserMessage(displayPrompt);
         const assistantMessage = createAssistantMessage();
@@ -701,8 +738,14 @@ if (missingElements.length) {
         } catch (error) {
             setAssistantResult("Could not reach the server. Please try again.", assistantMessage, true);
         } finally {
+            isSubmitting = false;
+
             if (submitButton) {
                 submitButton.disabled = false;
+            }
+
+            if (promptInput.value.trim().length > 0 || attachedFiles.length > 0) {
+                scheduleAutoSubmit();
             }
         }
     });

@@ -48,11 +48,11 @@
 
         <form class="composer" id="promptForm">
             <label class="sr-only" for="prompt">Prompt</label>
-            <textarea id="prompt" placeholder="Message Code Generator"></textarea>
+            <textarea id="prompt" placeholder="Ask anything or attach files"></textarea>
 
             <div class="attachment-row">
-                <input id="fileInput" class="sr-only" type="file" accept=".pdf,.txt,.md,.py,.js,.ts,.tsx,.jsx,.html,.css,.json,.csv,.xml,.yaml,.yml,.java,.c,.cpp,.cs,.php,.rb,.go,.rs,.sql,.env">
-                <button id="attachFileBtn" class="ghost-button attachment-button" type="button">Attach file</button>
+                <input id="fileInput" class="sr-only" type="file" accept=".pdf,.txt,.md,.py,.js,.ts,.tsx,.jsx,.html,.css,.json,.csv,.xml,.yaml,.yml,.java,.c,.cpp,.cs,.php,.rb,.go,.rs,.sql,.env" multiple>
+                <button id="attachFileBtn" class="ghost-button attachment-button" type="button">+ Attach files</button>
                 <div id="fileStatus" class="file-status" hidden></div>
                 <button id="removeFileBtn" class="ghost-button remove-file-button" type="button" hidden>Remove</button>
             </div>
