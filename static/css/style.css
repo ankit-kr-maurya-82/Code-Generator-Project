@@ -311,6 +311,30 @@ textarea::placeholder {
     color: #8b929e;
 }
 
+.attachment-row {
+    display: flex;
+    min-height: 38px;
+    align-items: center;
+    gap: 10px;
+    border-top: 1px solid var(--line);
+    padding: 10px 0 0;
+}
+
+.attachment-button,
+.remove-file-button {
+    flex: 0 0 auto;
+}
+
+.file-status {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .composer-footer {
     display: flex;
     align-items: center;
@@ -592,14 +616,21 @@ button:disabled {
 
     .output-header,
     .output-actions,
+    .attachment-row,
     .composer-footer {
         align-items: stretch;
         flex-direction: column;
     }
 
     .output-actions,
+    .attachment-button,
+    .remove-file-button,
     .primary-button {
         width: 100%;
+    }
+
+    .file-status {
+        white-space: normal;
     }
 
     .response-status,

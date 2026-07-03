@@ -9,9 +9,16 @@ const historyPanel = document.getElementById("historyPanel");
 const historyList = document.getElementById("historyList");
 const historyEmpty = document.getElementById("historyEmpty");
 const clearHistoryButton = document.getElementById("clearHistoryBtn");
+const fileInput = document.getElementById("fileInput");
+const attachFileButton = document.getElementById("attachFileBtn");
+const fileStatus = document.getElementById("fileStatus");
+const removeFileButton = document.getElementById("removeFileBtn");
 const chips = document.querySelectorAll(".chip");
 const historyStorageKey = "codeGeneratorHistory";
 const maxHistoryItems = 20;
+const maxFileSize = 120 * 1024;
+
+let attachedFile = null;
 
 const copyText = async (text) => {
     if (!text.trim() || !navigator.clipboard) {
@@ -324,6 +331,64 @@ const updateCount = () => {
     charCount.textContent = `${count.toLocaleString()} ${count === 1 ? "char" : "chars"}`;
 };
 
+const formatFileSize = (bytes) => {
+    if (bytes < 1024) {
+        return `${bytes} B`;
+    }
+
+    return `${(bytes / 1024).toFixed(1)} KB`;
+};
+
+const clearAttachedFile = () => {
+    attachedFile = null;
+    fileInput.value = "";
+    fileStatus.hidden = true;
+    fileStatus.textContent = "";
+    removeFileButton.hidden = true;
+};
+
+const setAttachedFile = (file, content) => {
+    attachedFile = {
+        name: file.name,
+        size: file.size,
+        content
+    };
+
+    fileStatus.hidden = false;
+    fileStatus.textContent = `${file.name} (${formatFileSize(file.size)})`;
+    removeFileButton.hidden = false;
+};
+
+const readAttachedFile = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.addEventListener("load", () => resolve(String(reader.result || "")));
+    reader.addEventListener("error", () => reject(new Error("Could not read this file.")));
+    reader.readAsText(file);
+});
+
+const buildRequestPayload = (prompt) => {
+    if (!attachedFile) {
+        return { prompt };
+    }
+
+    return {
+        prompt,
+        file_name: attachedFile.name,
+        file_content: attachedFile.content
+    };
+};
+
+const buildDisplayPrompt = (prompt) => {
+    if (!attachedFile) {
+        return prompt;
+    }
+
+    const task = prompt || "Analyze this file";
+
+    return `${task}\n\nAttached file: ${attachedFile.name} (${formatFileSize(attachedFile.size)})`;
+};
+
 const readHistory = () => {
     try {
         const saved = JSON.parse(localStorage.getItem(historyStorageKey) || "[]");
@@ -416,7 +481,11 @@ const requiredElements = {
     historyPanel,
     historyList,
     historyEmpty,
-    clearHistoryButton
+    clearHistoryButton,
+    fileInput,
+    attachFileButton,
+    fileStatus,
+    removeFileButton
 };
 
 const missingElements = Object.entries(requiredElements)
@@ -428,6 +497,37 @@ if (missingElements.length) {
 } else {
     renderHistory();
     promptInput.addEventListener("input", updateCount);
+
+    attachFileButton.addEventListener("click", () => {
+        fileInput.click();
+    });
+
+    removeFileButton.addEventListener("click", clearAttachedFile);
+
+    fileInput.addEventListener("change", async () => {
+        const [file] = fileInput.files || [];
+
+        if (!file) {
+            clearAttachedFile();
+            return;
+        }
+
+        if (file.size > maxFileSize) {
+            clearAttachedFile();
+            fileStatus.hidden = false;
+            fileStatus.textContent = `File is too large. Use ${formatFileSize(maxFileSize)} or smaller.`;
+            return;
+        }
+
+        try {
+            const content = await readAttachedFile(file);
+            setAttachedFile(file, content);
+        } catch (error) {
+            clearAttachedFile();
+            fileStatus.hidden = false;
+            fileStatus.textContent = error.message;
+        }
+    });
 
     historyToggle.addEventListener("click", () => {
         const isOpening = historyPanel.hidden;
@@ -453,17 +553,19 @@ if (missingElements.length) {
 
         const submitButton = form.querySelector('button[type="submit"]') || generateButton;
         const prompt = promptInput.value.trim();
+        const requestPayload = buildRequestPayload(prompt);
+        const displayPrompt = buildDisplayPrompt(prompt);
 
         emptyState.hidden = true;
 
-        if (!prompt) {
+        if (!prompt && !attachedFile) {
             const assistantMessage = createAssistantMessage();
-            setAssistantResult("Please enter a prompt first.", assistantMessage, true);
+            setAssistantResult("Please enter a prompt or attach a file first.", assistantMessage, true);
             promptInput.focus();
             return;
         }
 
-        createUserMessage(prompt);
+        createUserMessage(displayPrompt);
         const assistantMessage = createAssistantMessage();
         if (submitButton) {
             submitButton.disabled = true;
@@ -476,7 +578,7 @@ if (missingElements.length) {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ prompt })
+                body: JSON.stringify(requestPayload)
             });
 
             const data = await response.json();
@@ -488,8 +590,9 @@ if (missingElements.length) {
 
             const responseText = data.response || "No output was returned.";
             setAssistantResult(responseText, assistantMessage);
-            saveHistoryItem(prompt, responseText);
+            saveHistoryItem(displayPrompt, responseText);
             promptInput.value = "";
+            clearAttachedFile();
             updateCount();
         } catch (error) {
             setAssistantResult("Could not reach the server. Please try again.", assistantMessage, true);

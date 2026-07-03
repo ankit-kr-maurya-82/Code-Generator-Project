@@ -7,6 +7,7 @@ A FastAPI web app that generates beginner-friendly code answers using an AI prov
 - FastAPI backend with Jinja2 templates.
 - AI provider support for OpenAI-compatible chat APIs, OpenAI, Groq, and Gemini.
 - Clean frontend for entering prompts and viewing generated code.
+- Attach a text or code file so the AI can read and analyze its contents.
 - Response formatting into Result, Code, Explanation, and Required Libraries sections.
 - Browser localStorage history for recent generations.
 - Copy all output or copy individual code blocks.
@@ -34,12 +35,12 @@ Code generator Project/
 |-- services/
 |   |-- __init__.py         # Services package marker
 |   |-- ai_service.py       # AI provider selection and generation logic
-|   `-- prompt_service.py   # Prompt service exports
+|   `-- prompt_service.py   # Builds prompt text, including file-analysis prompts
 |-- static/
 |   |-- css/
 |   |   `-- style.css       # App styling
 |   `-- js/
-|       `-- app.js          # Frontend behavior, fetch calls, history, rendering
+|       `-- app.js          # Frontend behavior, file reading, fetch calls, history, rendering
 |-- templates/
 |   `-- index.html          # Main web page template
 `-- utils/
@@ -110,6 +111,17 @@ Open the app in your browser:
 http://127.0.0.1:8000
 ```
 
+## Analyze a File
+
+Use the `Attach file` button in the prompt box to select a text or code file. The browser reads the file content locally, adds it to the prompt, and sends it to `/generate` for AI analysis.
+
+You can either:
+
+- Write your own question, such as `Find bugs in this file`.
+- Attach a file without a prompt to get a general analysis.
+
+The app does not upload files to separate storage. File content is only included in the generation request.
+
 ## API Usage
 
 ### Generate Code
@@ -124,7 +136,19 @@ Request body:
 
 ```json
 {
-  "prompt": "Write a Python function to reverse a string"
+  "prompt": "Write a Python function to reverse a string",
+  "file_name": null,
+  "file_content": null
+}
+```
+
+For file analysis, send `file_name` and `file_content`:
+
+```json
+{
+  "prompt": "Find bugs in this file",
+  "file_name": "app.py",
+  "file_content": "print('hello')"
 }
 ```
 
@@ -132,7 +156,8 @@ Success response:
 
 ```json
 {
-  "response": "Generated AI response text"
+  "response": "Generated AI response text",
+  "mode": "prompt"
 }
 ```
 
@@ -141,11 +166,12 @@ If the prompt is empty or the provider configuration is missing, the API returns
 ## How It Works
 
 1. The browser loads `templates/index.html`.
-2. Frontend logic in `static/js/app.js` sends the prompt to `POST /generate`.
+2. Frontend logic in `static/js/app.js` reads any attached text file and sends the prompt to `POST /generate`.
 3. `routes/generate.py` validates the request with `schemas/prompt.py`.
-4. `services/ai_service.py` builds a beginner-friendly system prompt.
-5. The selected AI provider generates the response.
-6. The frontend formats the result into readable sections and stores recent generations in localStorage.
+4. `services/prompt_service.py` builds either a normal prompt or a file-analysis prompt.
+5. `services/ai_service.py` wraps that prompt in a beginner-friendly system prompt.
+6. The selected AI provider generates the response.
+7. The frontend formats the result into readable sections and stores recent generations in localStorage.
 
 ## Notes
 

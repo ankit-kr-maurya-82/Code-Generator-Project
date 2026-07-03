@@ -50,6 +50,13 @@
             <label class="sr-only" for="prompt">Prompt</label>
             <textarea id="prompt" placeholder="Message Code Generator"></textarea>
 
+            <div class="attachment-row">
+                <input id="fileInput" class="sr-only" type="file" accept=".txt,.md,.py,.js,.ts,.tsx,.jsx,.html,.css,.json,.csv,.xml,.yaml,.yml,.java,.c,.cpp,.cs,.php,.rb,.go,.rs,.sql,.env">
+                <button id="attachFileBtn" class="ghost-button attachment-button" type="button">Attach file</button>
+                <div id="fileStatus" class="file-status" hidden></div>
+                <button id="removeFileBtn" class="ghost-button remove-file-button" type="button" hidden>Remove</button>
+            </div>
+
             <div class="composer-footer">
                 <span class="count" id="charCount">0 chars</span>
                 <button id="generateBtn" class="primary-button" type="submit" aria-label="Send">

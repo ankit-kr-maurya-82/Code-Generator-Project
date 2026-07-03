@@ -2,4 +2,6 @@ from pydantic import BaseModel, Field
 
 
 class Prompt(BaseModel):
-    prompt: str = Field(..., min_length=1)
+    prompt: str = Field(default="")
+    file_name: str | None = Field(default=None, max_length=255)
+    file_content: str | None = Field(default=None, max_length=120_000)
