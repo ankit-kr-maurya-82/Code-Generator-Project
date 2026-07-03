@@ -8,6 +8,7 @@ const historyToggle = document.getElementById("historyToggle");
 const historyPanel = document.getElementById("historyPanel");
 const historyList = document.getElementById("historyList");
 const historyEmpty = document.getElementById("historyEmpty");
+const historyCount = document.getElementById("historyCount");
 const clearHistoryButton = document.getElementById("clearHistoryBtn");
 const fileInput = document.getElementById("fileInput");
 const attachFileButton = document.getElementById("attachFileBtn");
@@ -19,7 +20,6 @@ const fileReaderPreview = document.getElementById("fileReaderPreview");
 const fileReaderToggle = document.getElementById("fileReaderToggle");
 const chips = document.querySelectorAll(".chip");
 const historyStorageKey = "codeGeneratorHistory";
-const maxHistoryItems = 20;
 const maxFileSize = 120 * 1024;
 const maxPreviewChars = 1400;
 const supportedFileExtensions = new Set([
@@ -472,14 +472,23 @@ const buildDisplayPrompt = (prompt) => {
 const readHistory = () => {
     try {
         const saved = JSON.parse(localStorage.getItem(historyStorageKey) || "[]");
-        return Array.isArray(saved) ? saved : [];
+
+        if (Array.isArray(saved)) {
+            return saved;
+        }
+
+        if (saved && typeof saved === "object") {
+            return Object.values(saved).filter((item) => item && item.prompt && item.response);
+        }
+
+        return [];
     } catch (error) {
         return [];
     }
 };
 
 const writeHistory = (items) => {
-    localStorage.setItem(historyStorageKey, JSON.stringify(items.slice(0, maxHistoryItems)));
+    localStorage.setItem(historyStorageKey, JSON.stringify(items));
 };
 
 const formatHistoryTime = (timestamp) => {
@@ -518,6 +527,10 @@ const renderHistory = () => {
     const items = readHistory();
     historyList.innerHTML = "";
     historyEmpty.hidden = items.length > 0;
+
+    if (historyCount) {
+        historyCount.textContent = items.length;
+    }
 
     items.forEach((item) => {
         const button = document.createElement("button");
