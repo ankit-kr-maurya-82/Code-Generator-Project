@@ -51,11 +51,22 @@
             <textarea id="prompt" placeholder="Message Code Generator"></textarea>
 
             <div class="attachment-row">
-                <input id="fileInput" class="sr-only" type="file" accept=".txt,.md,.py,.js,.ts,.tsx,.jsx,.html,.css,.json,.csv,.xml,.yaml,.yml,.java,.c,.cpp,.cs,.php,.rb,.go,.rs,.sql,.env">
+                <input id="fileInput" class="sr-only" type="file" accept=".pdf,.txt,.md,.py,.js,.ts,.tsx,.jsx,.html,.css,.json,.csv,.xml,.yaml,.yml,.java,.c,.cpp,.cs,.php,.rb,.go,.rs,.sql,.env">
                 <button id="attachFileBtn" class="ghost-button attachment-button" type="button">Attach file</button>
                 <div id="fileStatus" class="file-status" hidden></div>
                 <button id="removeFileBtn" class="ghost-button remove-file-button" type="button" hidden>Remove</button>
             </div>
+
+            <section id="fileReaderPanel" class="file-reader-panel" hidden>
+                <div class="file-reader-header">
+                    <div>
+                        <div class="file-reader-label">File reader</div>
+                        <strong id="fileReaderName" class="file-reader-name">No file selected</strong>
+                    </div>
+                    <button id="fileReaderToggle" class="ghost-button file-reader-toggle" type="button">Preview</button>
+                </div>
+                <pre id="fileReaderPreview" class="file-reader-preview" hidden></pre>
+            </section>
 
             <div class="composer-footer">
                 <span class="count" id="charCount">0 chars</span>

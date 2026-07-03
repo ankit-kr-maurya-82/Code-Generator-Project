@@ -335,6 +335,58 @@ textarea::placeholder {
     white-space: nowrap;
 }
 
+.file-reader-panel {
+    margin-top: 10px;
+    border-top: 1px solid var(--line);
+    padding-top: 10px;
+}
+
+.file-reader-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.file-reader-label {
+    margin-bottom: 2px;
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.file-reader-name {
+    color: #111827;
+    font-size: 0.95rem;
+}
+
+.file-reader-toggle {
+    min-height: 32px;
+    padding: 0 10px;
+}
+
+.file-reader-preview {
+    margin: 10px 0 0;
+    max-height: 220px;
+    overflow: auto;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px;
+    background: #f8fafc;
+    color: #111827;
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: 0.84rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.file-reader-preview[hidden] {
+    display: none;
+}
+
 .composer-footer {
     display: flex;
     align-items: center;

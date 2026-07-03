@@ -13,12 +13,45 @@ const fileInput = document.getElementById("fileInput");
 const attachFileButton = document.getElementById("attachFileBtn");
 const fileStatus = document.getElementById("fileStatus");
 const removeFileButton = document.getElementById("removeFileBtn");
+const fileReaderPanel = document.getElementById("fileReaderPanel");
+const fileReaderName = document.getElementById("fileReaderName");
+const fileReaderPreview = document.getElementById("fileReaderPreview");
+const fileReaderToggle = document.getElementById("fileReaderToggle");
 const chips = document.querySelectorAll(".chip");
 const historyStorageKey = "codeGeneratorHistory";
 const maxHistoryItems = 20;
 const maxFileSize = 120 * 1024;
+const maxPreviewChars = 1400;
+const supportedFileExtensions = new Set([
+    ".pdf",
+    ".txt",
+    ".md",
+    ".py",
+    ".js",
+    ".ts",
+    ".tsx",
+    ".jsx",
+    ".html",
+    ".css",
+    ".json",
+    ".csv",
+    ".xml",
+    ".yaml",
+    ".yml",
+    ".java",
+    ".c",
+    ".cpp",
+    ".cs",
+    ".php",
+    ".rb",
+    ".go",
+    ".rs",
+    ".sql",
+    ".env"
+]);
 
-let attachedFile = null;
+let attachedFiles = [];
+let isFileReaderOpen = false;
 
 const copyText = async (text) => {
     if (!text.trim() || !navigator.clipboard) {
@@ -339,24 +372,67 @@ const formatFileSize = (bytes) => {
     return `${(bytes / 1024).toFixed(1)} KB`;
 };
 
+const buildFilePreview = (content) => {
+    const normalized = String(content || "").replace(/\r\n/g, "\n");
+
+    if (!normalized.trim()) {
+        return "No readable content found in this file.";
+    }
+
+    if (normalized.length <= maxPreviewChars) {
+        return normalized;
+    }
+
+    return `${normalized.slice(0, maxPreviewChars)}\n\n…`;
+};
+
+const updateFileReaderPanel = () => {
+    if (!fileReaderPanel || !fileReaderName || !fileReaderPreview || !fileReaderToggle) {
+        return;
+    }
+
+    if (!attachedFiles.length) {
+        fileReaderPanel.hidden = true;
+        fileReaderPreview.hidden = true;
+        fileReaderPreview.textContent = "";
+        fileReaderName.textContent = "No file selected";
+        fileReaderToggle.textContent = "Preview";
+        return;
+    }
+
+    const primaryFile = attachedFiles[0];
+    fileReaderPanel.hidden = false;
+    fileReaderName.textContent = `${attachedFiles.length} file${attachedFiles.length > 1 ? "s" : ""} selected`;
+    fileReaderPreview.textContent = buildFilePreview(primaryFile.content || "");
+    fileReaderPreview.hidden = !isFileReaderOpen;
+    fileReaderToggle.textContent = isFileReaderOpen ? "Hide preview" : "Preview";
+    fileStatus.hidden = false;
+    fileStatus.textContent = attachedFiles.map((file) => `${file.name} (${formatFileSize(file.size)})`).join(" • ");
+    removeFileButton.hidden = false;
+};
+
 const clearAttachedFile = () => {
-    attachedFile = null;
+    attachedFiles = [];
+    isFileReaderOpen = false;
     fileInput.value = "";
     fileStatus.hidden = true;
     fileStatus.textContent = "";
     removeFileButton.hidden = true;
+    updateFileReaderPanel();
 };
 
 const setAttachedFile = (file, content) => {
-    attachedFile = {
-        name: file.name,
-        size: file.size,
-        content
-    };
+    attachedFiles = [
+        ...attachedFiles,
+        {
+            name: file.name,
+            size: file.size,
+            content
+        }
+    ];
 
-    fileStatus.hidden = false;
-    fileStatus.textContent = `${file.name} (${formatFileSize(file.size)})`;
-    removeFileButton.hidden = false;
+    isFileReaderOpen = true;
+    updateFileReaderPanel();
 };
 
 const readAttachedFile = (file) => new Promise((resolve, reject) => {
@@ -368,25 +444,28 @@ const readAttachedFile = (file) => new Promise((resolve, reject) => {
 });
 
 const buildRequestPayload = (prompt) => {
-    if (!attachedFile) {
+    if (!attachedFiles.length) {
         return { prompt };
     }
 
     return {
         prompt,
-        file_name: attachedFile.name,
-        file_content: attachedFile.content
+        files: attachedFiles.map((file) => ({
+            name: file.name,
+            content: file.content ?? ""
+        }))
     };
 };
 
 const buildDisplayPrompt = (prompt) => {
-    if (!attachedFile) {
+    if (!attachedFiles.length) {
         return prompt;
     }
 
-    const task = prompt || "Analyze this file";
+    const task = prompt || "Analyze these files";
+    const labels = attachedFiles.map((file) => `${file.name} (${formatFileSize(file.size)})`);
 
-    return `${task}\n\nAttached file: ${attachedFile.name} (${formatFileSize(attachedFile.size)})`;
+    return `${task}\n\nAttached files: ${labels.join(", ")}`;
 };
 
 const readHistory = () => {
@@ -504,11 +583,32 @@ if (missingElements.length) {
 
     removeFileButton.addEventListener("click", clearAttachedFile);
 
-    fileInput.addEventListener("change", async () => {
-        const [file] = fileInput.files || [];
+    fileReaderToggle.addEventListener("click", () => {
+        if (!attachedFiles.length) {
+            return;
+        }
 
-        if (!file) {
+        isFileReaderOpen = !isFileReaderOpen;
+        updateFileReaderPanel();
+    });
+
+    fileInput.addEventListener("change", async () => {
+        const files = Array.from(fileInput.files || []);
+
+        if (!files.length) {
             clearAttachedFile();
+            return;
+        }
+
+        const [file] = files;
+
+        const fileExtension = file.name.includes(".") ? `.${file.name.split(".").pop().toLowerCase()}` : "";
+
+        if (!supportedFileExtensions.has(fileExtension)) {
+            clearAttachedFile();
+            fileStatus.hidden = false;
+            fileStatus.textContent = "Only PDF and text files are supported for analysis.";
+            updateFileReaderPanel();
             return;
         }
 
@@ -516,16 +616,20 @@ if (missingElements.length) {
             clearAttachedFile();
             fileStatus.hidden = false;
             fileStatus.textContent = `File is too large. Use ${formatFileSize(maxFileSize)} or smaller.`;
+            updateFileReaderPanel();
             return;
         }
 
         try {
-            const content = await readAttachedFile(file);
-            setAttachedFile(file, content);
+            for (const selectedFile of files) {
+                const content = await readAttachedFile(selectedFile);
+                setAttachedFile(selectedFile, content);
+            }
         } catch (error) {
             clearAttachedFile();
             fileStatus.hidden = false;
             fileStatus.textContent = error.message;
+            updateFileReaderPanel();
         }
     });
 
@@ -558,7 +662,7 @@ if (missingElements.length) {
 
         emptyState.hidden = true;
 
-        if (!prompt && !attachedFile) {
+        if (!prompt && !attachedFiles.length) {
             const assistantMessage = createAssistantMessage();
             setAssistantResult("Please enter a prompt or attach a file first.", assistantMessage, true);
             promptInput.focus();
