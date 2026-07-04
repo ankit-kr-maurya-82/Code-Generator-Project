@@ -801,4 +801,3 @@ promptInput.addEventListener("input", updateCount);
     document.addEventListener('keydown', handleEnterSubmit, true);
 
     updateCount();
-}
