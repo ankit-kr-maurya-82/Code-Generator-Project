@@ -587,9 +587,11 @@ const missingElements = Object.entries(requiredElements)
 
 if (missingElements.length) {
     console.warn(`Code Generator UI is missing required element(s): ${missingElements.join(", ")}`);
-} else {
-    renderHistory();
-    promptInput.addEventListener("input", updateCount);
+}
+
+console.log("Code Generator UI: initializing UI handlers");
+renderHistory();
+promptInput.addEventListener("input", updateCount);
 
     attachFileButton.addEventListener("click", () => {
         fileInput.click();
@@ -668,6 +670,7 @@ if (missingElements.length) {
 
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
+        console.debug('form submit handler invoked', { isSubmitting });
 
         if (isSubmitting) {
             return;
@@ -693,6 +696,11 @@ if (missingElements.length) {
         const assistantMessage = createAssistantMessage();
         if (submitButton) {
             submitButton.disabled = true;
+            submitButton.setAttribute("aria-busy", "true");
+            const label = submitButton.querySelector('.button-label');
+            if (label) {
+                label.textContent = 'Sending...';
+            }
         }
         setAssistantResult("Generating a clean answer...", assistantMessage, false, false);
 
@@ -725,10 +733,72 @@ if (missingElements.length) {
 
             if (submitButton) {
                 submitButton.disabled = false;
+                submitButton.setAttribute("aria-busy", "false");
+                const label = submitButton.querySelector('.button-label');
+                if (label) {
+                    label.textContent = 'Send';
+                }
+                // ensure focus returns to the input
+                promptInput.focus();
             }
 
         }
     });
+
+    // Submit on Enter (single Enter submits; Shift+Enter inserts newline).
+    // Use a document-level handler to reliably catch Enter when the textarea is focused.
+    const handleEnterSubmit = (e) => {
+        try {
+            if (e.isComposing) return;
+
+            if (e.key !== 'Enter') return;
+
+            const target = e.target;
+            const isTextArea = target && (target === promptInput || (target.tagName && target.tagName.toLowerCase() === 'textarea'));
+
+            if (!isTextArea) return;
+
+            const isModifier = e.ctrlKey || e.metaKey;
+            const isShift = e.shiftKey;
+
+            // Ctrl/Cmd+Enter: always submit
+            if (isModifier) {
+                e.preventDefault();
+                if (isSubmitting) return;
+                if (typeof form.requestSubmit === 'function') {
+                    form.requestSubmit();
+                } else {
+                    const tmp = document.createElement('button');
+                    tmp.type = 'submit';
+                    tmp.style.display = 'none';
+                    form.appendChild(tmp);
+                    tmp.click();
+                    tmp.remove();
+                }
+                return;
+            }
+
+            // Enter without Shift: submit
+            if (!isShift) {
+                e.preventDefault();
+                if (isSubmitting) return;
+                if (typeof form.requestSubmit === 'function') {
+                    form.requestSubmit();
+                } else {
+                    const tmp = document.createElement('button');
+                    tmp.type = 'submit';
+                    tmp.style.display = 'none';
+                    form.appendChild(tmp);
+                    tmp.click();
+                    tmp.remove();
+                }
+            }
+        } catch (err) {
+            console.error('Enter submit handler error', err);
+        }
+    };
+
+    document.addEventListener('keydown', handleEnterSubmit, true);
 
     updateCount();
 }

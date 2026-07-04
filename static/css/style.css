@@ -463,6 +463,31 @@ textarea::placeholder {
     line-height: 1;
 }
 
+/* Small spinner shown while sending */
+.button-spinner {
+    display: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.28);
+    border-top-color: rgba(255, 255, 255, 0.92);
+    margin-left: 8px;
+    box-sizing: border-box;
+    animation: spin 1s linear infinite;
+}
+
+.primary-button[aria-busy="true"] .button-spinner {
+    display: inline-block;
+}
+
+.primary-button[aria-busy="true"] .button-icon {
+    display: none;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 .output-header {
     display: flex;
     align-items: center;
