@@ -4,6 +4,9 @@ from fastapi import APIRouter, HTTPException
 from schemas.prompt import Prompt
 from services.ai_service import AIServiceError, generate_code
 from services.prompt_service import build_generation_prompt, has_file
+from db import engine
+from sqlmodel import Session
+from models.history import HistoryItem
 
 router = APIRouter()
 
@@ -108,6 +111,16 @@ async def generate(data: Prompt):
         result = await generate_code(prompt)
     except AIServiceError as error:
         raise HTTPException(status_code=400, detail=str(error))
+
+    # Persist the generation to the database (best-effort)
+    try:
+        with Session(engine) as session:
+            item = HistoryItem(prompt=prompt, response=result)
+            session.add(item)
+            session.commit()
+    except Exception:
+        # don't fail the request if DB write fails
+        pass
 
     return {
         "response": result,
