@@ -28,7 +28,6 @@ Code generator Project/
 |   |-- __init__.py         # Routes package marker
 |   |-- generate.py         # POST /generate endpoint
 |   |-- auth.py             # Placeholder for future authentication routes
-|   `-- history.py          # Placeholder for future history routes
 |-- schemas/
 |   |-- __init__.py         # Exports schema classes
 |   `-- prompt.py           # Prompt request schema
@@ -176,5 +175,5 @@ If the prompt is empty or the provider configuration is missing, the API returns
 ## Notes
 
 - Keep `.env` private and do not commit real API keys.
-- `routes/auth.py`, `routes/history.py`, `models/`, and `utils/` are currently placeholders for future features.
+- `routes/auth.py`, `models/`, and `utils/` are currently placeholders for future features.
 - Frontend history is stored only in the user's browser localStorage, not in a database.

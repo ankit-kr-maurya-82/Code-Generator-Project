@@ -1,4 +1,4 @@
-const form = document.getElementById("promptForm");
+﻿const form = document.getElementById("promptForm");
 const generateButton = document.getElementById("generateBtn");
 const promptInput = document.getElementById("prompt");
 const chatThread = document.getElementById("chatThread");

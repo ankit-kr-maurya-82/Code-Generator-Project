@@ -13,13 +13,23 @@ class AIServiceError(Exception):
     pass
 
 
-def get_system_prompt(prompt: str) -> str:
+def get_system_prompt(prompt: str, history_context: str = "") -> str:
+    history_section = ""
+    if history_context.strip():
+        history_section = f"""
+Previous Conversation Context:
+{history_context}
+
+---
+
+"""
+    
     return f"""
 You are a beginner-friendly AI Code Generator.
 
 Answer in simple English and keep the response easy to understand.
 
-Use exactly these four section headings in this order:
+{history_section}Use exactly these four section headings in this order:
 Result
    - Give the direct answer first.
 Code
@@ -35,6 +45,7 @@ Rules:
 - If the request is simple, like "2+2", do not over-explain.
 - Avoid advanced words when a simple word works.
 - Keep examples short and practical.
+- Consider the conversation history above and maintain consistency with previous responses.
 
 User Request:
 {prompt}
@@ -45,7 +56,7 @@ def get_setting(name: str, fallback: str = "") -> str:
     return os.getenv(name, fallback).strip()
 
 
-async def generate_with_chat_api(prompt: str, provider: str) -> str:
+async def generate_with_chat_api(prompt: str, provider: str, history_context: str = "") -> str:
     model = get_setting("MODEL") or get_setting(f"{provider.upper()}_MODEL")
     base_url = get_setting("BASE_URL") or get_setting(f"{provider.upper()}_BASE_URL")
     api_key = get_setting(f"{provider.upper()}_API_KEY")
@@ -65,7 +76,7 @@ async def generate_with_chat_api(prompt: str, provider: str) -> str:
         "messages": [
             {
                 "role": "user",
-                "content": get_system_prompt(prompt),
+                "content": get_system_prompt(prompt, history_context),
             }
         ],
         "temperature": 0.3,
@@ -92,7 +103,7 @@ async def generate_with_chat_api(prompt: str, provider: str) -> str:
         raise AIServiceError(f"No response received from {provider.title()}.") from error
 
 
-async def generate_with_gemini(prompt: str) -> str:
+async def generate_with_gemini(prompt: str, history_context: str = "") -> str:
     api_key = get_setting("GEMINI_API_KEY")
     model_name = get_setting("MODEL") or get_setting("GEMINI_MODEL", "gemini-2.5-flash")
 
@@ -101,7 +112,7 @@ async def generate_with_gemini(prompt: str) -> str:
 
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel(model_name)
-    response = model.generate_content(get_system_prompt(prompt))
+    response = model.generate_content(get_system_prompt(prompt, history_context))
 
     if response and hasattr(response, "text"):
         return response.text
@@ -109,9 +120,10 @@ async def generate_with_gemini(prompt: str) -> str:
     raise AIServiceError("No response received from Gemini.")
 
 
-async def generate_code(prompt: str) -> str:
+async def generate_code(prompt: str, history_context: str = "") -> str:
     """
     Generate code using the selected AI provider.
+    Optionally includes historical context for better responses.
     """
 
     if not prompt.strip():
@@ -121,10 +133,10 @@ async def generate_code(prompt: str) -> str:
 
     try:
         if provider in {"groq", "openai"}:
-            return await generate_with_chat_api(prompt, provider)
+            return await generate_with_chat_api(prompt, provider, history_context)
 
         if provider == "gemini":
-            return await generate_with_gemini(prompt)
+            return await generate_with_gemini(prompt, history_context)
 
         raise AIServiceError("AI_PROVIDER must be groq, openai, or gemini.")
     except AIServiceError:

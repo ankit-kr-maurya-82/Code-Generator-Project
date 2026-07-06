@@ -3,8 +3,6 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from routes.generate import router as generate_router
-from routes.history import router as history_router
-from db import init_db
 
 app = FastAPI()
 
@@ -19,10 +17,4 @@ async def home(request: Request):
         name="index.html",
     )
 
-@app.on_event("startup")
-def on_startup():
-    # Ensure database tables exist
-    init_db()
-
 app.include_router(generate_router)
-app.include_router(history_router)

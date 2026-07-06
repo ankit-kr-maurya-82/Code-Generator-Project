@@ -4,9 +4,8 @@ from fastapi import APIRouter, HTTPException
 from schemas.prompt import Prompt
 from services.ai_service import AIServiceError, generate_code
 from services.prompt_service import build_generation_prompt, has_file
-from db import engine
-from sqlmodel import Session
-from models.history import HistoryItem
+from services.history_service import add_conversation
+from services.history_analysis import build_context_from_history
 
 router = APIRouter()
 
@@ -108,21 +107,92 @@ async def generate(data: Prompt):
         )
 
     try:
-        result = await generate_code(prompt)
+        # Build context from conversation history
+        history_context = build_context_from_history(prompt)
+        
+        # Generate code with historical context
+        result = await generate_code(prompt, history_context)
+        
+        # Store this conversation in history
+        add_conversation(
+            user_prompt=data.prompt,
+            ai_response=result,
+            file_name=data.file_name,
+            file_content=data.file_content[:500] if data.file_content else None,  # Store first 500 chars
+            tags=["code_generation", "file_analysis" if has_file(data) else "prompt"]
+        )
     except AIServiceError as error:
         raise HTTPException(status_code=400, detail=str(error))
-
-    # Persist the generation to the database (best-effort)
-    try:
-        with Session(engine) as session:
-            item = HistoryItem(prompt=prompt, response=result)
-            session.add(item)
-            session.commit()
-    except Exception:
-        # don't fail the request if DB write fails
-        pass
 
     return {
         "response": result,
         "mode": "file_analysis" if has_file(data) else "prompt",
+    }
+
+
+@router.get("/history")
+async def get_history(limit: int = 10):
+    """Get recent conversation history."""
+    from services.history_service import get_recent_conversations
+    
+    conversations = get_recent_conversations(limit)
+    return {
+        "conversations": [
+            {
+                "id": conv.id,
+                "user_prompt": conv.user_prompt[:200],
+                "ai_response": conv.ai_response[:200],
+                "timestamp": conv.timestamp.isoformat(),
+                "tags": conv.tags
+            }
+            for conv in conversations
+        ],
+        "count": len(conversations)
+    }
+
+
+@router.get("/history/stats")
+async def get_history_stats():
+    """Get statistics and analysis of conversation history."""
+    from services.history_analysis import get_history_summary
+    
+    return get_history_summary()
+
+
+@router.get("/history/search")
+async def search_history(keyword: str):
+    """Search conversation history by keyword."""
+    from services.history_service import get_conversations_by_keyword
+    
+    if not keyword.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Keyword is required for search."
+        )
+    
+    conversations = get_conversations_by_keyword(keyword)
+    return {
+        "keyword": keyword,
+        "conversations": [
+            {
+                "id": conv.id,
+                "user_prompt": conv.user_prompt[:200],
+                "ai_response": conv.ai_response[:200],
+                "timestamp": conv.timestamp.isoformat()
+            }
+            for conv in conversations
+        ],
+        "count": len(conversations)
+    }
+
+
+@router.post("/history/clear")
+async def clear_history():
+    """Clear all conversation history."""
+    from services.history_service import clear_history as clear_all
+    
+    clear_all()
+    return {
+        "message": "Conversation history cleared successfully.",
+        "status": "success"
     }
