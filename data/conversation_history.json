@@ -95,7 +95,175 @@
         "code_generation",
         "prompt"
       ]
+    },
+    {
+      "id": "5bbfd4cc-7120-4372-a3a9-74028f3f1ddb",
+      "user_prompt": "Hi",
+      "ai_response": "# Result\nHello! I'm here to help you with coding.\n\n# Code\n```python\nprint(\"Hello, how can I help you?\")\n```\n\n# Explanation\nThis code prints a message to the user. The `print` function is used to show the message on the screen. \n\n# Required Libraries\nNo extra libraries needed",
+      "timestamp": "2026-07-06T20:47:52.688856",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "66498f92-ca7c-472f-a90b-b277ebcd2e44",
+      "user_prompt": "Create a responsive React pricing card with monthly and annual billing states.",
+      "ai_response": "# Result\nWe will create a simple React pricing card that shows monthly and annual billing options.\n\n# Code\n```python\n# We will use JavaScript for this task, not Python. \n# Here is a simple React example:\n```\n```javascript\nimport React, { useState } from 'react';\n\nfunction PricingCard() {\n  const [isMonthly, setIsMonthly] = useState(true);\n\n  const handleBillingChange = () => {\n    setIsMonthly(!isMonthly);\n  };\n\n  const price = isMonthly ? 9.99 : 99.99;\n\n  return (\n    <div>\n      <h2>Pricing Card</h2>\n      <p>\n        {isMonthly ? 'Monthly' : 'Annual'}: ${price}\n      </p>\n      <button onClick={handleBillingChange}>\n        Switch to {isMonthly ? 'Annual' : 'Monthly'}\n      </button>\n    </div>\n  );\n}\n\nexport default PricingCard;\n```\n\n# Explanation\n- We import React and the `useState` function to store the billing state.\n- We define a `PricingCard` function component.\n- We use `useState` to store whether the billing is monthly or annual.\n- We define a `handleBillingChange` function to switch between monthly and annual billing.\n- We calculate the price based on the billing state.\n- We render a button to switch between monthly and annual billing.\n\n# Required Libraries\nNo extra libraries needed, but you need to have React installed in your project.",
+      "timestamp": "2026-07-06T20:53:54.086732",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "a009dcf8-93f1-446e-a338-ea7e4a2db9c8",
+      "user_prompt": "Design a REST API schema for a task manager with auth, projects, labels, and comments.",
+      "ai_response": "# Result\nWe will design a simple REST API schema for a task manager. The schema will include authentication, projects, labels, and comments.\n\n# Code\n```python\nfrom fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n# User model\nclass User(BaseModel):\n    id: int\n    username: str\n    password: str\n\n# Project model\nclass Project(BaseModel):\n    id: int\n    name: str\n    description: str\n\n# Label model\nclass Label(BaseModel):\n    id: int\n    name: str\n    color: str\n\n# Comment model\nclass Comment(BaseModel):\n    id: int\n    text: str\n\n# Task model\nclass Task(BaseModel):\n    id: int\n    title: str\n    description: str\n    project_id: int\n    labels: list\n    comments: list\n\n# Routes\n@app.post(\"/login\")\ndef login(username: str, password: str):\n    # Authenticate user\n    return {\"token\": \"example_token\"}\n\n@app.get(\"/projects\")\ndef get_projects():\n    # Return all projects\n    return [{\"id\": 1, \"name\": \"Project 1\"}, {\"id\": 2, \"name\": \"Project 2\"}]\n\n@app.get(\"/projects/{project_id}/labels\")\ndef get_labels(project_id: int):\n    # Return all labels for a project\n    return [{\"id\": 1, \"name\": \"Label 1\"}, {\"id\": 2, \"name\": \"Label 2\"}]\n\n@app.get(\"/projects/{project_id}/tasks\")\ndef get_tasks(project_id: int):\n    # Return all tasks for a project\n    return [{\"id\": 1, \"title\": \"Task 1\"}, {\"id\": 2, \"title\": \"Task 2\"}]\n\n@app.get(\"/tasks/{task_id}/comments\")\ndef get_comments(task_id: int):\n    # Return all comments for a task\n    return [{\"id\": 1, \"text\": \"Comment 1\"}, {\"id\": 2, \"text\": \"Comment 2\"}]\n```\n\n# Explanation\n- We use the FastAPI framework to create the REST API.\n- We define models for users, projects, labels, comments, and tasks using Pydantic's BaseModel.\n- We create routes for authentication, getting projects, labels, tasks, and comments.\n- Each route returns a simple response, such as a list of projects or a token for authentication.\n\n# Required Libraries\nNo extra libraries needed beyond FastAPI and Pydantic, which are imported in the code.",
+      "timestamp": "2026-07-06T21:42:20.772619",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "cfd42601-f6d4-4412-b8cc-450637720c85",
+      "user_prompt": "write a program to create a login and register in backend in JS",
+      "ai_response": "# Result\nThis program will create a simple login and register system in the backend using JavaScript.\n\n# Code\n```javascript\nconst users = {};\n\nfunction register(username, password) {\n    if (users[username]) {\n        return \"Username already exists\";\n    } else {\n        users[username] = password;\n        return \"User created\";\n    }\n}\n\nfunction login(username, password) {\n    if (users[username] === password) {\n        return \"Login successful\";\n    } else {\n        return \"Invalid username or password\";\n    }\n}\n\nconsole.log(register(\"john\", \"123\"));\nconsole.log(login(\"john\", \"123\"));\nconsole.log(login(\"john\", \"456\"));\n```\n\n# Explanation\n- We create an empty object `users` to store usernames and passwords.\n- The `register` function checks if a username already exists. If it does, it returns an error message. If not, it creates a new user.\n- The `login` function checks if the username and password match. If they do, it returns a success message. If not, it returns an error message.\n\n# Required Libraries\nNo extra libraries needed",
+      "timestamp": "2026-07-07T09:03:58.726314",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "078b6a9e-3f45-4d6f-960c-584adbc1b36b",
+      "user_prompt": "node js",
+      "ai_response": "# Result\nWe will create a simple \"Hello World\" program in Node.js.\n\n# Code\n```javascript\nconsole.log(\"Hello World\");\n```\n\n# Explanation\nThis code uses the `console.log` function to print \"Hello World\" to the screen. The `console.log` function is a basic function in Node.js that prints output.\n\n# Required Libraries\nNo extra libraries needed",
+      "timestamp": "2026-07-07T09:04:12.108247",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "b9c14fc5-45dd-479f-b1cf-ffae783312ed",
+      "user_prompt": "register user in nodejs and file structure",
+      "ai_response": "# Result\nThis program will create a simple user registration system in Node.js.\n\n# Code\n```javascript\nconst fs = require('fs');\nconst path = require('path');\n\nconst users = {};\n\nfunction register(username, password) {\n    if (users[username]) {\n        return \"Username already exists\";\n    } else {\n        users[username] = password;\n        fs.writeFileSync('users.json', JSON.stringify(users));\n        return \"User registered\";\n    }\n}\n\nconst username = 'john';\nconst password = '12345';\nconsole.log(register(username, password));\n```\n\n# Explanation\n- We use `fs` and `path` modules to work with files.\n- We define a `register` function that checks if a user exists.\n- If the user does not exist, we add the user to the `users` object and save it to a file named `users.json`.\n- We use `JSON.stringify` to convert the `users` object to a string that can be written to a file.\n- We call the `register` function with a username and password to test it.\n\n# Required Libraries\nNo extra libraries needed, only built-in Node.js modules like `fs` and `path`. \n\nNote: For a real application, consider using a database instead of a file to store user data. Also, never store passwords in plain text, use a secure method to hash and store passwords. \n\nFile structure:\n- project/\n  - users.json\n  - index.js (the code above)",
+      "timestamp": "2026-07-07T09:04:36.915016",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "faf5ad7b-309d-4439-9383-8498f4477009",
+      "user_prompt": "models",
+      "ai_response": "# Result\nWe will create a simple example of a model in Python.\n\n# Code\n```python\nclass User:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n\nuser = User(\"John\", 30)\nprint(user.name)\nprint(user.age)\n```\n\n# Explanation\nThis code defines a `User` class with a constructor that takes `name` and `age` parameters. The `__init__` method is a special method that is called when an object is created. We create a new `User` object named `user` and print its `name` and `age`.\n\n# Required Libraries\nNo extra libraries needed",
+      "timestamp": "2026-07-07T09:06:10.720227",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "834c475c-e0df-4b05-8778-406f00813944",
+      "user_prompt": "models in Nodejs",
+      "ai_response": "# Result\nWe will create a simple example of a model in Node.js.\n\n# Code\n```javascript\nclass User {\n    constructor(name, age) {\n        this.name = name;\n        this.age = age;\n    }\n}\n\nlet user = new User(\"John\", 30);\nconsole.log(user.name);\nconsole.log(user.age);\n```\n\n# Explanation\nThis code defines a `User` class with a constructor that takes `name` and `age` as parameters. The `let user = new User(\"John\", 30);` line creates a new `User` object. The `console.log` lines print the `name` and `age` of the user.\n\n# Required Libraries\nNo extra libraries needed",
+      "timestamp": "2026-07-07T09:06:24.565597",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "b03c7186-0512-4be2-9fcc-0bacdb603177",
+      "user_prompt": "models for database",
+      "ai_response": "# Result\nWe will create a simple example of a model for a database in Python. \n\n# Code\n```python\nclass DatabaseModel:\n    def __init__(self, id, name, data):\n        self.id = id\n        self.name = name\n        self.data = data\n\n    def save(self):\n        print(f\"Saving {self.name} to database\")\n\n    def delete(self):\n        print(f\"Deleting {self.name} from database\")\n\nmodel = DatabaseModel(1, \"example\", \"some data\")\nmodel.save()\nmodel.delete()\n```\n\n# Explanation\nThis code defines a `DatabaseModel` class with an `id`, `name`, and `data`. The `save` method prints a message to save the data. The `delete` method prints a message to delete the data. We create a new `DatabaseModel` and call its methods.\n\n# Required Libraries\nNo extra libraries needed",
+      "timestamp": "2026-07-07T09:06:52.806099",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "4075eff7-2889-4752-9186-3f3e0620c12c",
+      "user_prompt": "Design a REST API schema for a task manager with auth, projects, labels, and comments. previous code",
+      "ai_response": "# Result\nWe will add comments to the existing REST API schema for a task manager with auth, projects, labels, and comments.\n\n# Code\n```python\nfrom fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n# User model\nclass User(BaseModel):\n    id: int\n    username: str\n    email: str\n\n# Project model\nclass Project(BaseModel):\n    id: int\n    name: str\n    description: str\n\n# Label model\nclass Label(BaseModel):\n    id: int\n    name: str\n    color: str\n\n# Comment model\nclass Comment(BaseModel):\n    id: int\n    text: str\n    project_id: int\n\n# Task model\nclass Task(BaseModel):\n    id: int\n    title: str\n    description: str\n    project_id: int\n    labels: list\n    comments: list\n\n# Example routes\n@app.post(\"/projects/\")\ndef create_project(project: Project):\n    return project\n\n@app.post(\"/labels/\")\ndef create_label(label: Label):\n    return label\n\n@app.post(\"/comments/\")\ndef create_comment(comment: Comment):\n    return comment\n\n@app.post(\"/tasks/\")\ndef create_task(task: Task):\n    return task\n```\n\n# Explanation\nWe define models for User, Project, Label, Comment, and Task using Pydantic's BaseModel. Each model has fields that are relevant to the task manager. We then define example routes for creating projects, labels, comments, and tasks using FastAPI.\n\n# Required Libraries\nNo extra libraries needed beyond FastAPI and Pydantic, which are already included in the code.",
+      "timestamp": "2026-07-07T09:07:21.045637",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "43829035-8cbf-4d90-9d1b-d574c5460596",
+      "user_prompt": "in JS",
+      "ai_response": "# Result\nWe will create a simple example of a model in JavaScript, similar to our previous examples in Python and Node.js.\n\n# Code\n```javascript\nclass Task {\n    constructor(id, name) {\n        this.id = id;\n        this.name = name;\n    }\n\n    printTask() {\n        console.log(`Task ID: ${this.id}, Task Name: ${this.name}`);\n    }\n}\n\nlet task = new Task(1, \"Example Task\");\ntask.printTask();\n```\n\n# Explanation\nThis code defines a `Task` class with `id` and `name` properties. The `printTask` method is used to print the task details. We create a new `Task` object and call the `printTask` method to display the task information.\n\n# Required Libraries\nNo extra libraries needed",
+      "timestamp": "2026-07-07T09:07:32.874070",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "1c1deb8d-754a-4a87-ae46-632d93e208a8",
+      "user_prompt": "controller .js",
+      "ai_response": "# Result\nWe will create a simple example of a controller in JavaScript.\n\n# Code\n```javascript\nclass Controller {\n    constructor() {\n        this.tasks = [];\n    }\n\n    addTask(task) {\n        this.tasks.push(task);\n    }\n\n    printTasks() {\n        for (let task of this.tasks) {\n            console.log(`Task ID: ${task.id}, Task Name: ${task.name}`);\n        }\n    }\n}\n\nclass Task {\n    constructor(id, name) {\n        this.id = id;\n        this.name = name;\n    }\n}\n\n// Example usage:\nlet controller = new Controller();\nlet task1 = new Task(1, \"Task 1\");\nlet task2 = new Task(2, \"Task 2\");\n\ncontroller.addTask(task1);\ncontroller.addTask(task2);\ncontroller.printTasks();\n```\n\n# Explanation\n- We create a `Controller` class to manage tasks.\n- The `addTask` method adds a new task to the `tasks` list.\n- The `printTasks` method prints all tasks in the `tasks` list.\n- We also create a `Task` class to represent individual tasks.\n- In the example usage, we create a new `Controller`, add two tasks, and then print all tasks.\n\n# Required Libraries\nNo extra libraries needed",
+      "timestamp": "2026-07-07T09:08:56.506905",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "9a8d43f7-a653-4975-8a61-587729b730b6",
+      "user_prompt": "Explain this error in simple words and show the fix.",
+      "ai_response": "# Result\nThe error is not shown, so I will give a general example of a common error and its fix.\n\n# Code\n```python\n# Example of a common error: dividing by zero\ndef divide_numbers(num1, num2):\n    if num2 == 0:\n        return \"Error: Cannot divide by zero\"\n    else:\n        return num1 / num2\n\nnum1 = 10\nnum2 = 0\nprint(divide_numbers(num1, num2))\n```\n\n# Explanation\n- We define a function `divide_numbers` to divide two numbers.\n- We check if the second number `num2` is zero to avoid an error.\n- If `num2` is zero, we return an error message instead of trying to divide.\n- If `num2` is not zero, we divide `num1` by `num2` and return the result.\n\n# Required Libraries\nNo extra libraries needed",
+      "timestamp": "2026-07-07T09:12:06.223291",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "c6bbf12e-cdcd-4696-bd1f-167bba107198",
+      "user_prompt": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>AI Code Generator</title>\n    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n    <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap\" rel=\"stylesheet\">\n    <link rel=\"stylesheet\" href=\"/static/css/style.css\">\n</head>\n<body>\n    <main class=\"app-shell\">\n        <header class=\"topbar\">\n            <div class=\"brand\">\n                <span class=\"brand-mark\">AI</span>\n                <div class=\"brand-copy\">\n                    {% comment %} <strong>Code Generator</strong> {% endcomment %}\n                </div>\n            </div>\n            <div class=\"topbar-actions\">\n                <button id=\"historyToggle\" class=\"topbar-button\" type=\"button\" aria-expanded=\"false\" aria-controls=\"historyPanel\">History</button>\n                <span class=\"provider-pill\">CodeGen</span>\n            </div>\n        </header>\n\n        <aside class=\"history-panel\" id=\"historyPanel\" aria-label=\"Generation history\" hidden>\n            <div class=\"history-header\">\n                <div>\n                    <h2>History</h2>\n                    <span class=\"history-count\">Saved items: <strong id=\"historyCount\">0</strong></span>\n                </div>\n                <button id=\"clearHistoryBtn\" class=\"ghost-button\" type=\"button\">Clear</button>\n            </div>\n            <div class=\"history-empty\" id=\"historyEmpty\">No saved generations yet.</div>\n            <div class=\"history-list\" id=\"historyList\"></div>\n        </aside>\n\n        <section class=\"chat-thread\" id=\"chatThread\" aria-live=\"polite\">\n            <div class=\"empty-state\" id=\"emptyState\">\n                <section class=\"welcome\" aria-labelledby=\"page-title\">\n                    <h1 id=\"page-title\"><span>Hello, developer.</span> What should we build?</h1>\n                </section>\n\n                <section class=\"suggestions\" aria-label=\"Example prompts\">\n                    <button type=\"button\" class=\"chip\" data-prompt=\"Create a responsive React pricing card with monthly and annual billing states.\">Create a React pricing card</button>\n                    <button type=\"button\" class=\"chip\" data-prompt=\"Write a Python script that reads a CSV, cleans missing values, and exports a summary report.\">Write a CSV cleanup script</button>\n                    <button type=\"button\" class=\"chip\" data-prompt=\"Design a REST API schema for a task manager with auth, projects, labels, and comments.\">Design a task manager API</button>\n                    <button type=\"button\" class=\"chip\" data-prompt=\"Explain this error in simple words and show the fix.\">Explain and fix an error</button>\n                </section>\n            </div>\n        </section>\n\n        <form class=\"composer\" id=\"promptForm\">\n            <label class=\"sr-only\" for=\"prompt\">Prompt</label>\n            <textarea id=\"prompt\" placeholder=\"Ask anything or attach files\"></textarea>\n\n            <div class=\"attachment-row\">\n                <input id=\"fileInput\" class=\"sr-only\" type=\"file\" accept=\".pdf,.txt,.md,.py,.js,.ts,.tsx,.jsx,.html,.css,.json,.csv,.xml,.yaml,.yml,.java,.c,.cpp,.cs,.php,.rb,.go,.rs,.sql,.env\" multiple>\n                <button id=\"attachFileBtn\" class=\"ghost-button attachment-button\" type=\"button\">+ Attach files</button>\n                <div id=\"fileStatus\" class=\"file-status\" hidden></div>\n                <button id=\"removeFileBtn\" class=\"ghost-button remove-file-button\" type=\"button\" hidden>Remove</button>\n            </div>\n\n            <section id=\"fileReaderPanel\" class=\"file-reader-panel\" hidden>\n                <div class=\"file-reader-header\">\n                    <div>\n                        <div class=\"file-reader-label\">File reader</div>\n                        <strong id=\"fileReaderName\" class=\"file-reader-name\">No file selected</strong>\n                    </div>\n                    <button id=\"fileReaderToggle\" class=\"ghost-button file-reader-toggle\" type=\"button\">Preview</button>\n                </div>\n                <pre id=\"fileReaderPreview\" class=\"file-reader-preview\" hidden></pre>\n            </section>\n\n            <div class=\"composer-footer\">\n                <span class=\"count\" id=\"charCount\">0 chars</span>\n                <button id=\"generateBtn\" class=\"primary-button\" type=\"submit\" aria-label=\"Send\" aria-busy=\"false\">\n                    <span class=\"button-label\">Send</span>\n                    <span class=\"button-spinner\" aria-hidden=\"true\"></span>\n                    <span class=\"button-icon\">+</span>\n                </button>\n            </div>\n        </form>\n    </main>\n\n    <script src=\"/static/js/app.js?v=20260702-2\"></script>\n</body>\n</html>",
+      "ai_response": "# Result\nThe given code is an HTML template for a code generator interface. It includes a text area for user input, buttons for attaching files and generating code, and a section for displaying the generation history.\n\n# Code\n```python\n# This Python code is a simple example of a code generator\nclass CodeGenerator:\n    def __init__(self):\n        self.history = []\n\n    def generate_code(self, prompt):\n        # For simplicity, this example just returns the prompt\n        code = prompt\n        self.history.append(code)\n        return code\n\n# Create a code generator and test it\ngenerator = CodeGenerator()\nprint(generator.generate_code(\"Hello, World!\"))\n```\n\n# Explanation\n- The `CodeGenerator` class is defined to manage code generation and history.\n- The `__init__` method initializes the generator with an empty history list.\n- The `generate_code` method takes a prompt, generates code (in this simple case, it just returns the prompt), and adds the generated code to the history.\n- An instance of `CodeGenerator` is created, and the `generate_code` method is tested with a \"Hello, World!\" prompt.\n\n# Required Libraries\nNo extra libraries needed",
+      "timestamp": "2026-07-07T09:15:33.719628",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
     }
   ],
-  "total_count": 8
+  "total_count": 22
 }
