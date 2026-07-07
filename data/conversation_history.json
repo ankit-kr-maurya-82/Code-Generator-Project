@@ -263,7 +263,91 @@
         "code_generation",
         "prompt"
       ]
+    },
+    {
+      "id": "6e913b79-1775-43e3-9c40-0a60bafee9f3",
+      "user_prompt": "prevoius code",
+      "ai_response": "# Result\nThe previous code was to check if a number is even or odd. \n\n# Code\n```python\ndef check_number(num):\n    if num % 2 == 0:\n        return \"Even\"\n    else:\n        return \"Odd\"\n\nnum = int(input(\"Enter a number: \"))\nprint(check_number(num))\n```\n\n# Explanation\n- We define a function `check_number` to check the number.\n- Inside the function, we use `if num % 2 == 0` to see if the number is even.\n- If the number is even, it returns \"Even\", or it returns \"Odd\".\n- We ask the user for a number with `int(input(\"Enter a number: \"))`.\n- Then we print the result with `print(check_number(num))`.\n\n# Required Libraries\nNo extra libraries needed",
+      "timestamp": "2026-07-07T10:53:40.080977",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "89e8ade5-0fde-4157-8c43-b1da69835296",
+      "user_prompt": "wap to check weather number is spam or not",
+      "ai_response": "# Result\nThis program will tell you if a number is spam or not. For this example, we'll consider a spam number as one that is less than 10.\n\n# Code\n```python\ndef check_spam_number(num):\n    if num < 10:\n        return \"Spam\"\n    else:\n        return \"Not Spam\"\n\nnum = int(input(\"Enter a number: \"))\nprint(check_spam_number(num))\n```\n\n# Explanation\n- We define a function `check_spam_number` to check if the number is spam.\n- Inside the function, we use an `if` statement to check if the number is less than 10.\n- If the number is less than 10, the function returns \"Spam\", otherwise it returns \"Not Spam\".\n- We take a number as input from the user and store it in the `num` variable.\n- We call the `check_spam_number` function with the user's number and print the result.\n\n# Required Libraries\nNo extra libraries needed",
+      "timestamp": "2026-07-07T13:42:12.846211",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "49f542bf-ad35-4c72-a68b-2ace42e906a1",
+      "user_prompt": "def check_spam_number(num):\n    spam = {\"+923495348584\", \"0000000000\", \"0011001100\"}\n    if num < 10:\n        return \"Spam\"\n    else:\n        return \"Not Spam\"\n\n\n\nnum = int(input(\"Enter a number: \"))\nprint(check_spam_number(num))",
+      "ai_response": "# Result\nThis program will tell you if a phone number is spam or not. \n\n# Code\n```python\ndef check_spam_number(num):\n    spam = {\"923495348584\", \"0000000000\", \"0011001100\"}\n    num_str = str(num)\n    if num_str in spam or len(num_str) < 10:\n        return \"Spam\"\n    else:\n        return \"Not Spam\"\n\nnum = int(input(\"Enter a 10 digit number without country code: \"))\nprint(check_spam_number(num))\n```\n\n# Explanation\n- We define a function `check_spam_number` that checks if a number is spam.\n- We create a set `spam` with known spam numbers.\n- We convert the input number to a string `num_str` to compare with spam numbers.\n- We check if `num_str` is in the `spam` set or if its length is less than 10.\n- If the number is spam, we return \"Spam\", otherwise we return \"Not Spam\".\n\n# Required Libraries\nNo extra libraries needed",
+      "timestamp": "2026-07-07T13:46:04.559676",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "777cfbc5-5bef-4c19-9ca1-a19f5d90cca0",
+      "user_prompt": "hi",
+      "ai_response": "# Result\nHello, I'm here to help you with your code.\n\n# Code\n```python\nprint(\"Hello, how can I help you?\")\n```\n\n# Explanation\n- This code prints a message to the user.\n- The `print` function is used to display text on the screen.\n\n# Required Libraries\nNo extra libraries needed",
+      "timestamp": "2026-07-07T13:52:44.949404",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "5ba19e12-7ec4-4244-aee5-97d0c27a0c91",
+      "user_prompt": "who are you",
+      "ai_response": "# Result\nI'm a code generator to help you with your coding needs.\n\n# Code\n```python\nprint(\"I'm a code generator to help you with your coding needs.\")\n```\n\n# Explanation\n- This code prints a message to the user.\n- The `print` function is used to display text on the screen.\n- It tells the user about my role as a code generator.\n\n# Required Libraries\nNo extra libraries needed",
+      "timestamp": "2026-07-07T13:53:09.365890",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "93e9ffab-3674-4815-9ffe-8b634ee87913",
+      "user_prompt": "Design a REST API schema for a task manager with auth, projects, labels, and comments.",
+      "ai_response": "# Result\nWe will design a simple REST API schema for a task manager. The schema will include authentication, projects, labels, and comments.\n\n# Code\n```python\nfrom fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n# User model\nclass User(BaseModel):\n    id: int\n    username: str\n    password: str\n\n# Project model\nclass Project(BaseModel):\n    id: int\n    name: str\n    description: str\n\n# Label model\nclass Label(BaseModel):\n    id: int\n    name: str\n    color: str\n\n# Comment model\nclass Comment(BaseModel):\n    id: int\n    text: str\n    project_id: int\n\n# Task model\nclass Task(BaseModel):\n    id: int\n    title: str\n    description: str\n    project_id: int\n    labels: list\n    comments: list\n\n# Authentication endpoint\n@app.post(\"/login\")\ndef login(user: User):\n    # Simple authentication for demonstration purposes\n    if user.username == \"admin\" and user.password == \"password\":\n        return {\"token\": \"example_token\"}\n    else:\n        raise HTTPException(status_code=401, detail=\"Invalid username or password\")\n\n# Project endpoint\n@app.post(\"/projects\")\ndef create_project(project: Project):\n    # Create a new project\n    return project\n\n# Label endpoint\n@app.post(\"/labels\")\ndef create_label(label: Label):\n    # Create a new label\n    return label\n\n# Comment endpoint\n@app.post(\"/comments\")\ndef create_comment(comment: Comment):\n    # Create a new comment\n    return comment\n```\n\n# Explanation\n- We define the `User`, `Project`, `Label`, `Comment`, and `Task` models using Pydantic's `BaseModel`.\n- We create endpoints for authentication, creating projects, labels, and comments using FastAPI.\n- The `login` endpoint checks the username and password, and returns a token if they are correct.\n- The `create_project`, `create_label`, and `create_comment` endpoints create new projects, labels, and comments, respectively.\n\n# Required Libraries\nNo extra libraries needed beyond `fastapi` and `pydantic`, which are already included in the code example.",
+      "timestamp": "2026-07-07T13:55:01.043370",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
+    },
+    {
+      "id": "248ae453-cc44-4b27-a7c6-283ab11847bb",
+      "user_prompt": "in JS",
+      "ai_response": "# Result\nYou want to write code in JavaScript.\n\n# Code\n```javascript\nconsole.log(\"Hello, I'm here to help you with your code.\");\n```\n\n# Explanation\n- This code prints a message to the user.\n- The `console.log` function is used to display text on the screen.\n- It tells the user that we are here to help with their code.\n\n# Required Libraries\nNo extra libraries needed",
+      "timestamp": "2026-07-07T13:55:14.323897",
+      "file_name": null,
+      "file_content": null,
+      "tags": [
+        "code_generation",
+        "prompt"
+      ]
     }
   ],
-  "total_count": 22
+  "total_count": 29
 }
