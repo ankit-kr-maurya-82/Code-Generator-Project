@@ -1,4 +1,5 @@
 import os
+import logging
 
 from fastapi import APIRouter, HTTPException
 from schemas.prompt import Prompt
@@ -8,6 +9,7 @@ from services.history_service import add_conversation
 from services.history_analysis import build_context_from_history
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.post("/generate")
@@ -113,14 +115,18 @@ async def generate(data: Prompt):
         # Generate code with historical context
         result = await generate_code(prompt, history_context)
         
-        # Store this conversation in history
-        add_conversation(
-            user_prompt=data.prompt,
-            ai_response=result,
-            file_name=data.file_name,
-            file_content=data.file_content[:500] if data.file_content else None,  # Store first 500 chars
-            tags=["code_generation", "file_analysis" if has_file(data) else "prompt"]
-        )
+        # History is useful, but generation should still succeed on read-only
+        # serverless filesystems.
+        try:
+            add_conversation(
+                user_prompt=data.prompt,
+                ai_response=result,
+                file_name=data.file_name,
+                file_content=data.file_content[:500] if data.file_content else None,
+                tags=["code_generation", "file_analysis" if has_file(data) else "prompt"]
+            )
+        except OSError:
+            logger.exception("Could not save conversation history.")
     except AIServiceError as error:
         raise HTTPException(status_code=400, detail=str(error))
 

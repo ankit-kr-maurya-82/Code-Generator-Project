@@ -713,16 +713,25 @@ promptInput.addEventListener("input", updateCount);
                 body: JSON.stringify(requestPayload)
             });
 
-            const data = await response.json();
+            const responseText = await response.text();
+            let data = {};
+
+            try {
+                data = responseText ? JSON.parse(responseText) : {};
+            } catch (error) {
+                data = {
+                    detail: responseText || "The server returned an unreadable response."
+                };
+            }
 
             if (!response.ok) {
                 setAssistantResult(data.detail || "Something went wrong.", assistantMessage, true);
                 return;
             }
 
-            const responseText = data.response || "No output was returned.";
-            setAssistantResult(responseText, assistantMessage);
-            saveHistoryItem(displayPrompt, responseText);
+            const resultText = data.response || "No output was returned.";
+            setAssistantResult(resultText, assistantMessage);
+            saveHistoryItem(displayPrompt, resultText);
             promptInput.value = "";
             clearAttachedFile();
             updateCount();

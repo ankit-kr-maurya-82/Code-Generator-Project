@@ -8,12 +8,16 @@ import uuid
 from models.conversation import Conversation, ConversationHistory
 
 
-HISTORY_FILE = "data/conversation_history.json"
+HISTORY_FILE = os.getenv("HISTORY_FILE") or (
+    "/tmp/conversation_history.json"
+    if os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME")
+    else "data/conversation_history.json"
+)
 
 
 def ensure_history_file_exists():
     """Create history file if it doesn't exist."""
-    Path("data").mkdir(exist_ok=True)
+    Path(HISTORY_FILE).parent.mkdir(parents=True, exist_ok=True)
     if not os.path.exists(HISTORY_FILE):
         history = ConversationHistory()
         with open(HISTORY_FILE, "w") as f:
@@ -38,7 +42,7 @@ def load_history() -> ConversationHistory:
             conversations=conversations,
             total_count=len(conversations)
         )
-    except (json.JSONDecodeError, ValueError):
+    except (OSError, json.JSONDecodeError, ValueError):
         return ConversationHistory()
 
 
