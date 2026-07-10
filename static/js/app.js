@@ -1,4 +1,5 @@
 ﻿const form = document.getElementById("promptForm");
+const appShell = document.querySelector(".app-shell");
 const generateButton = document.getElementById("generateBtn");
 const promptInput = document.getElementById("prompt");
 const chatThread = document.getElementById("chatThread");
@@ -20,7 +21,8 @@ const fileReaderPreview = document.getElementById("fileReaderPreview");
 const fileReaderToggle = document.getElementById("fileReaderToggle");
 const chips = document.querySelectorAll(".chip");
 const historyStorageKey = "codeGeneratorHistory";
-const maxFileSize = 120 * 1024;
+const maxTextFileSize = 120 * 1024;
+const maxPdfFileSize = 5 * 1024 * 1024;
 const maxPreviewChars = 1400;
 const supportedFileExtensions = new Set([
     ".pdf",
@@ -53,6 +55,35 @@ const supportedFileExtensions = new Set([
 let attachedFiles = [];
 let isFileReaderOpen = false;
 let isSubmitting = false;
+
+const isMobileHistoryLayout = () => window.matchMedia("(max-width: 680px)").matches;
+
+const syncHistoryPanelLayout = () => {
+    if (!historyPanel || !historyToggle) {
+        return;
+    }
+
+    if (isMobileHistoryLayout()) {
+        historyPanel.hidden = true;
+        historyToggle.setAttribute("aria-expanded", "false");
+        appShell?.classList.add("history-collapsed");
+        return;
+    }
+
+    historyPanel.hidden = false;
+    historyToggle.setAttribute("aria-expanded", "true");
+    appShell?.classList.remove("history-collapsed");
+};
+
+const setHistoryPanelOpen = (isOpen) => {
+    if (!historyPanel || !historyToggle) {
+        return;
+    }
+
+    historyPanel.hidden = !isOpen;
+    historyToggle.setAttribute("aria-expanded", String(isOpen));
+    appShell?.classList.toggle("history-collapsed", !isOpen);
+};
 
 const copyText = async (text) => {
     if (!text.trim() || !navigator.clipboard) {
@@ -373,8 +404,18 @@ const formatFileSize = (bytes) => {
     return `${(bytes / 1024).toFixed(1)} KB`;
 };
 
+const getFileExtension = (fileName) => {
+    return fileName.includes(".") ? `.${fileName.split(".").pop().toLowerCase()}` : "";
+};
+
+const isPdfFile = (file) => getFileExtension(file.name) === ".pdf";
+
 const buildFilePreview = (content) => {
     const normalized = String(content || "").replace(/\r\n/g, "\n");
+
+    if (normalized.startsWith("data:application/pdf")) {
+        return "PDF selected. Text will be extracted on the server before analysis.";
+    }
 
     if (!normalized.trim()) {
         return "No readable content found in this file.";
@@ -441,6 +482,12 @@ const readAttachedFile = (file) => new Promise((resolve, reject) => {
 
     reader.addEventListener("load", () => resolve(String(reader.result || "")));
     reader.addEventListener("error", () => reject(new Error("Could not read this file.")));
+
+    if (isPdfFile(file)) {
+        reader.readAsDataURL(file);
+        return;
+    }
+
     reader.readAsText(file);
 });
 
@@ -505,8 +552,11 @@ const closeHistory = () => {
         return;
     }
 
-    historyPanel.hidden = true;
-    historyToggle.setAttribute("aria-expanded", "false");
+    if (!isMobileHistoryLayout()) {
+        return;
+    }
+
+    setHistoryPanelOpen(false);
 };
 
 const restoreHistoryItem = (item) => {
@@ -590,6 +640,7 @@ if (missingElements.length) {
 }
 
 console.log("Code Generator UI: initializing UI handlers");
+syncHistoryPanelLayout();
 renderHistory();
 promptInput.addEventListener("input", updateCount);
 
@@ -616,24 +667,26 @@ promptInput.addEventListener("input", updateCount);
             return;
         }
 
-        const [file] = files;
+        for (const file of files) {
+            const fileExtension = getFileExtension(file.name);
 
-        const fileExtension = file.name.includes(".") ? `.${file.name.split(".").pop().toLowerCase()}` : "";
+            if (!supportedFileExtensions.has(fileExtension)) {
+                clearAttachedFile();
+                fileStatus.hidden = false;
+                fileStatus.textContent = "Only PDF and text files are supported for analysis.";
+                updateFileReaderPanel();
+                return;
+            }
 
-        if (!supportedFileExtensions.has(fileExtension)) {
-            clearAttachedFile();
-            fileStatus.hidden = false;
-            fileStatus.textContent = "Only PDF and text files are supported for analysis.";
-            updateFileReaderPanel();
-            return;
-        }
+            const maxFileSize = isPdfFile(file) ? maxPdfFileSize : maxTextFileSize;
 
-        if (file.size > maxFileSize) {
-            clearAttachedFile();
-            fileStatus.hidden = false;
-            fileStatus.textContent = `File is too large. Use ${formatFileSize(maxFileSize)} or smaller.`;
-            updateFileReaderPanel();
-            return;
+            if (file.size > maxFileSize) {
+                clearAttachedFile();
+                fileStatus.hidden = false;
+                fileStatus.textContent = `${file.name} is too large. Use ${formatFileSize(maxFileSize)} or smaller.`;
+                updateFileReaderPanel();
+                return;
+            }
         }
 
         try {
@@ -650,10 +703,10 @@ promptInput.addEventListener("input", updateCount);
     });
 
     historyToggle.addEventListener("click", () => {
-        const isOpening = historyPanel.hidden;
-        historyPanel.hidden = !isOpening;
-        historyToggle.setAttribute("aria-expanded", String(isOpening));
+        setHistoryPanelOpen(historyPanel.hidden);
     });
+
+    window.addEventListener("resize", syncHistoryPanelLayout);
 
     clearHistoryButton.addEventListener("click", () => {
         writeHistory([]);

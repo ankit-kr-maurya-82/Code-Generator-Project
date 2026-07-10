@@ -4,12 +4,85 @@ import logging
 from fastapi import APIRouter, HTTPException
 from schemas.prompt import Prompt
 from services.ai_service import AIServiceError, generate_code
+from services.pdf_service import extract_pdf_text
 from services.prompt_service import build_generation_prompt, has_file
 from services.history_service import add_conversation
 from services.history_analysis import build_context_from_history
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+SUPPORTED_TEXT_FILE_EXTENSIONS = {
+    ".txt",
+    ".md",
+    ".py",
+    ".js",
+    ".ts",
+    ".tsx",
+    ".jsx",
+    ".html",
+    ".css",
+    ".json",
+    ".csv",
+    ".xml",
+    ".yaml",
+    ".yml",
+    ".java",
+    ".c",
+    ".cpp",
+    ".cs",
+    ".php",
+    ".rb",
+    ".go",
+    ".rs",
+    ".sql",
+    ".env",
+}
+
+
+def get_file_extension(file_name: str) -> str:
+    return os.path.splitext((file_name or "").strip())[1].lower()
+
+
+def validate_supported_file(file_name: str) -> str:
+    file_extension = get_file_extension(file_name)
+
+    if file_extension == ".pdf" or file_extension in SUPPORTED_TEXT_FILE_EXTENSIONS:
+        return file_extension
+
+    raise HTTPException(
+        status_code=400,
+        detail="Only PDF and text files are supported for analysis.",
+    )
+
+
+def normalize_file_for_analysis(file_name: str, file_content: str) -> tuple[str, str]:
+    file_name = (file_name or "").strip()
+    file_extension = validate_supported_file(file_name)
+
+    if file_extension == ".pdf":
+        return file_name, extract_pdf_text(file_name, file_content)
+
+    return file_name, file_content
+
+
+def normalize_files_for_analysis(files: list[dict]) -> list[dict]:
+    normalized_files = []
+
+    for file in files:
+        file_name, file_content = normalize_file_for_analysis(
+            file_name=file.get("name") or "",
+            file_content=file.get("content") or "",
+        )
+        normalized_files.append(
+            {
+                **file,
+                "name": file_name,
+                "content": file_content,
+            }
+        )
+
+    return normalized_files
 
 
 @router.post("/generate")
@@ -26,79 +99,16 @@ async def generate(data: Prompt):
             detail="Both file_name and file_content are required for file analysis.",
         )
 
-    if has_multiple_files:
-        for file in data.files or []:
-            file_name = (file.get("name") or "").strip()
-            file_extension = os.path.splitext(file_name)[1].lower()
-            is_pdf = file_extension == ".pdf"
-            is_text_file = file_extension in {
-                ".txt",
-                ".md",
-                ".py",
-                ".js",
-                ".ts",
-                ".tsx",
-                ".jsx",
-                ".html",
-                ".css",
-                ".json",
-                ".csv",
-                ".xml",
-                ".yaml",
-                ".yml",
-                ".java",
-                ".c",
-                ".cpp",
-                ".cs",
-                ".php",
-                ".rb",
-                ".go",
-                ".rs",
-                ".sql",
-                ".env",
-            }
-
-            if not is_pdf and not is_text_file:
-                raise HTTPException(
-                    status_code=400,
-                    detail="Only PDF and text files are supported for analysis.",
-                )
-    elif has_file_name or has_file_content:
-        file_name = (data.file_name or "").strip()
-        file_extension = os.path.splitext(file_name)[1].lower()
-        is_pdf = file_extension == ".pdf"
-        is_text_file = file_extension in {
-            ".txt",
-            ".md",
-            ".py",
-            ".js",
-            ".ts",
-            ".tsx",
-            ".jsx",
-            ".html",
-            ".css",
-            ".json",
-            ".csv",
-            ".xml",
-            ".yaml",
-            ".yml",
-            ".java",
-            ".c",
-            ".cpp",
-            ".cs",
-            ".php",
-            ".rb",
-            ".go",
-            ".rs",
-            ".sql",
-            ".env",
-        }
-
-        if not is_pdf and not is_text_file:
-            raise HTTPException(
-                status_code=400,
-                detail="Only PDF and text files are supported for analysis.",
+    try:
+        if has_multiple_files:
+            data.files = normalize_files_for_analysis(data.files or [])
+        elif has_file_name or has_file_content:
+            data.file_name, data.file_content = normalize_file_for_analysis(
+                file_name=data.file_name,
+                file_content=data.file_content,
             )
+    except AIServiceError as error:
+        raise HTTPException(status_code=400, detail=str(error))
 
     prompt = build_generation_prompt(data)
 
